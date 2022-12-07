@@ -1,0 +1,10 @@
+{
+  "microservices": [
+    {
+      "name": "SimpleClass",
+      "identifiedClasses": [
+        "cullinan.test.imports.SimpleClass"
+      ]
+    }
+  ]
+}
