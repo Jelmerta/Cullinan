@@ -1,17 +1,17 @@
 package cullinan.helpers.decomposition.javagenerators;
 
-import spoon.reflect.code.CtBlock;
-import spoon.reflect.code.CtInvocation;
-import spoon.reflect.code.CtLiteral;
-import spoon.reflect.code.CtVariableRead;
+import spoon.reflect.code.*;
 import spoon.reflect.declaration.*;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.reference.CtExecutableReference;
+import spoon.reflect.reference.CtTypeReference;
 import spoonhelpers.managers.SpoonFactoryManager;
 import spoonhelpers.managers.SpoonMethodManager;
 
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class ClassDefinitionsCreator {
     private final List<String> serviceClassDefinitions;
@@ -20,8 +20,9 @@ public class ClassDefinitionsCreator {
     private CtClass classDefinitions;
 
     public ClassDefinitionsCreator(List<String> serviceClassDefinitions, List<String> proxyClassDefinitions) {
-        this.serviceClassDefinitions = serviceClassDefinitions;
-        this.proxyClassDefinitions = proxyClassDefinitions;
+        // To lower case for easier matching. Could probably do this during deserialization of classnames in microservices
+        this.serviceClassDefinitions = serviceClassDefinitions.stream().map(String::toLowerCase).collect(Collectors.toList());
+        this.proxyClassDefinitions = proxyClassDefinitions.stream().map(String::toLowerCase).collect(Collectors.toList());
     }
 
     public CtClass build() {
@@ -43,12 +44,14 @@ public class ClassDefinitionsCreator {
         CtAnonymousExecutable staticProxyClassDefinitionsAssignment = buildClassDefinitions(proxyClassDefinitions, proxyClassDefinitionsField);
         this.classDefinitions.addAnonymousExecutable(staticProxyClassDefinitionsAssignment);
 
+        addIsServiceClassMethod();
+        addIsProxyClassMethod();
+
         return classDefinitions;
     }
 
     private void createClassDefinitions() {
-        classDefinitions = SpoonFactoryManager.getDefaultFactory().createClass();
-        classDefinitions.setSimpleName("util.ClassDefinitions");
+        classDefinitions = SpoonFactoryManager.getDefaultFactory().createClass("util.ClassDefinitions");
         classDefinitions.addModifier(ModifierKind.PUBLIC);
     }
 
@@ -75,5 +78,78 @@ public class ClassDefinitionsCreator {
         staticProxyClassDefinitionsAssignment.setBody(block);
         staticProxyClassDefinitionsAssignment.addModifier(ModifierKind.STATIC);
         return staticProxyClassDefinitionsAssignment;
+    }
+
+    private void addIsServiceClassMethod() {
+        CtTypeReference<Object> returnType = SpoonFactoryManager.getDefaultFactory().createCtTypeReference(boolean.class);
+        CtMethod isServiceClass = SpoonFactoryManager.getDefaultFactory().createMethod();
+        isServiceClass.setSimpleName("isServiceClass");
+        isServiceClass.setType(returnType);
+        isServiceClass.addModifier(ModifierKind.PUBLIC);
+        isServiceClass.addModifier(ModifierKind.STATIC);
+
+        CtParameter className = SpoonFactoryManager.getDefaultFactory().createParameter();
+        className.setType(SpoonFactoryManager.getDefaultFactory().createCtTypeReference(String.class));
+        className.setSimpleName("className");
+        isServiceClass.addParameter(className);
+        CtVariableRead classNameRead = SpoonFactoryManager.getDefaultFactory().createVariableRead();
+        classNameRead.setVariable(className.getReference());
+
+        CtExecutableReference toLowerCaseReference = SpoonMethodManager.findMethod(SpoonFactoryManager.getDefaultFactory().createCtTypeReference(String.class), "toLowerCase").getReference();
+        CtInvocation toLowerCase = SpoonFactoryManager.getDefaultFactory().createInvocation();
+        toLowerCase.setTarget(classNameRead);
+        toLowerCase.setExecutable(toLowerCaseReference);
+
+        CtField serviceClassDefinitionsField = classDefinitions.getField("serviceClassDefinitions");
+        CtVariableRead classDefinitionsRead = SpoonFactoryManager.getDefaultFactory().createVariableRead();
+        classDefinitionsRead.setVariable(serviceClassDefinitionsField.getReference());
+
+        CtExecutableReference contains = SpoonMethodManager.findMethod(SpoonFactoryManager.getDefaultFactory().createCtTypeReference(Set.class), "contains").getReference();
+        CtInvocation containsCall = SpoonFactoryManager.getDefaultFactory().createInvocation();
+        containsCall.setTarget(classDefinitionsRead);
+        containsCall.setExecutable(contains);
+        containsCall.addArgument(toLowerCase);
+
+        CtReturn returnStatement = SpoonFactoryManager.getDefaultFactory().createReturn();
+        returnStatement.setReturnedExpression(containsCall);
+
+        isServiceClass.setBody(returnStatement);
+        classDefinitions.addMethod(isServiceClass);
+    }
+
+    private void addIsProxyClassMethod() {
+        CtTypeReference<Object> returnType = SpoonFactoryManager.getDefaultFactory().createCtTypeReference(boolean.class);
+        CtMethod isProxyClass = SpoonFactoryManager.getDefaultFactory().createMethod();
+        isProxyClass.setSimpleName("isProxyClass");
+        isProxyClass.setType(returnType);
+        isProxyClass.addModifier(ModifierKind.PUBLIC);
+        isProxyClass.addModifier(ModifierKind.STATIC);
+
+        CtParameter className = SpoonFactoryManager.getDefaultFactory().createParameter();
+        className.setType(SpoonFactoryManager.getDefaultFactory().createCtTypeReference(String.class));
+        className.setSimpleName("className");
+        isProxyClass.addParameter(className);
+        CtVariableRead classNameRead = SpoonFactoryManager.getDefaultFactory().createVariableRead();
+        classNameRead.setVariable(className.getReference());
+
+        CtExecutableReference toLowerCaseReference = SpoonMethodManager.findMethod(SpoonFactoryManager.getDefaultFactory().createCtTypeReference(String.class), "toLowerCase").getReference();
+        CtInvocation toLowerCase = SpoonFactoryManager.getDefaultFactory().createInvocation();
+        toLowerCase.setTarget(classNameRead);
+        toLowerCase.setExecutable(toLowerCaseReference);
+
+        CtField serviceClassDefinitionsField = classDefinitions.getField("proxyClassDefinitions");
+        CtVariableRead classDefinitionsRead = SpoonFactoryManager.getDefaultFactory().createVariableRead();
+        classDefinitionsRead.setVariable(serviceClassDefinitionsField.getReference());
+        CtExecutableReference contains = SpoonMethodManager.findMethod(SpoonFactoryManager.getDefaultFactory().createCtTypeReference(Set.class), "contains").getReference();
+        CtInvocation containsCall = SpoonFactoryManager.getDefaultFactory().createInvocation();
+        containsCall.setTarget(classDefinitionsRead);
+        containsCall.setExecutable(contains);
+        containsCall.addArgument(toLowerCase);
+
+        CtReturn returnStatement = SpoonFactoryManager.getDefaultFactory().createReturn();
+        returnStatement.setReturnedExpression(containsCall);
+
+        isProxyClass.setBody(returnStatement);
+        classDefinitions.addMethod(isProxyClass);
     }
 }

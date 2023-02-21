@@ -1,18 +1,20 @@
 package cullinanalternativeapproach;
 
+import java.nio.file.Path;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ServiceDefinition {
     ServiceType serviceType;
     String name;
-    String outputPath;
+    Path outputPath;
     List<String> classNames;
 
-    public ServiceDefinition(ServiceType serviceType, String name, String outputPath, List<String> classNames) {
+    public ServiceDefinition(ServiceType serviceType, String name, Path outputPath, List<String> classNames) {
         this.serviceType = serviceType;
         this.name = name;
         this.outputPath = outputPath;
-        this.classNames = classNames;
+        this.classNames = classNames.stream().map(String::toLowerCase).collect(Collectors.toList()); // TODO Probably good idea to just lowercase...?
     }
 
     public ServiceType getServiceType() {
@@ -23,7 +25,7 @@ public class ServiceDefinition {
         return name;
     }
 
-    public String getOutputPath() {
+    public Path getOutputPath() {
         return outputPath;
     }
 

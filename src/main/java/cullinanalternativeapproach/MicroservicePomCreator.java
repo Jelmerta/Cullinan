@@ -1,36 +1,39 @@
-package cullinan.helpers.decomposition.pomgenerators;
+package cullinanalternativeapproach;
 
-import org.w3c.dom.*;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.*;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-import java.io.*;
+import java.io.IOException;
 
-public class MicroservicePomParser {
-    // TODO Hardcoded right now
-    private static final String pomPath = "/home/jelmer/Documents/Software Engineering/Master Project/projects/Cullinan/Cullinan/dddsample-core-master/pom.xml";
-    private static final String resultPath = "/home/jelmer/Documents/Software Engineering/Master Project/projects/Cullinan/Cullinan/dddsample-core-master/pom2.xml";
+public class MicroservicePomCreator {
     private static final String DEPENDENCY_ARTIFACT_ID = "client";
     private static final String DEPENDENCY_VERSION = "1.0-SNAPSHOT";
     private static final String DEPENDENCY_SCOPE = "compile";
-    private static String dependencyGroupId;
-    private final File originalPom;
+    private final Document originalPom;
     private final String microserviceName;
 
-    public static void main(String[] args) throws Exception {
-        MicroservicePomParser locationPomParser = new MicroservicePomParser(new File(pomPath), "se.citerus", "Location");
-        locationPomParser.buildMicroservicePom();
-    }
+    public MicroservicePomCreator(Document originalPom, String microserviceName) {
+        Element documentElement = originalPom.getDocumentElement();
 
-    public MicroservicePomParser(File originalPom, String packageRoot, String microserviceName) {
-        this.originalPom = originalPom;
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        DocumentBuilder db = null;
+        try {
+            db = dbf.newDocumentBuilder();
+        } catch (ParserConfigurationException e) {
+            throw new RuntimeException(e);
+        }
+        Document clonedDocument = db.newDocument();
+        Node copiedRoot = clonedDocument.importNode(documentElement, true);
+        clonedDocument.appendChild(copiedRoot);
+
+        this.originalPom = clonedDocument;
         this.microserviceName = microserviceName;
-        this.dependencyGroupId = packageRoot;
 
         try {
             buildMicroservicePom();
@@ -40,19 +43,18 @@ public class MicroservicePomParser {
     }
 
     // TODO Add output path?
-    public void buildMicroservicePom() throws ParserConfigurationException, SAXException, IOException {
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+    public Document buildMicroservicePom() throws ParserConfigurationException, SAXException, IOException {
+//        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+//        DocumentBuilder db = dbf.newDocumentBuilder();
+//        Document doc = db.parse(originalPom);
 
-        DocumentBuilder db = dbf.newDocumentBuilder();
+        originalPom.getDocumentElement().normalize();
 
-        Document doc = db.parse(originalPom);
-
-        doc.getDocumentElement().normalize();
-
-        Node project = doc.getElementsByTagName("project").item(0);
+        Node project = originalPom.getElementsByTagName("project").item(0);
 
         NodeList projectElements = project.getChildNodes();
 
+        String groupId = null;
         for (int temp = 0; temp < projectElements.getLength(); temp++) {
             Node node = projectElements.item(temp);
             node.normalize();
@@ -64,21 +66,19 @@ public class MicroservicePomParser {
             if (node.getNodeName().equalsIgnoreCase("artifactId")) {
                 node.setTextContent(microserviceName.toLowerCase());
             }
+
+//            What do we do here again? Is this necessary?
+            if (node.getNodeName().equalsIgnoreCase("groupId")) {
+                groupId = node.getTextContent(); // TODO Normalize?
+            }
         }
 
-        addDependency(doc);
-
-        // TODO Add dependency on the right modules (probably only client?) We could, if time allows remove unnecessary dependencies.
-
-        try (FileOutputStream output = new FileOutputStream(resultPath)) {
-            writeXml(doc, output);
-        } catch (IOException | TransformerException e) {
-            throw new RuntimeException(e);
-        }
+        addDependency(originalPom, groupId);
+        return originalPom;
     }
 
     // White space is a bit hacky rn...
-    private static void addDependency(Document document) {
+    private static void addDependency(Document document, String dependencyGroupId) {
         Node project = document.getElementsByTagName("project").item(0);
         NodeList childNodes = project.getChildNodes();
         for (int temp = 0; temp < childNodes.getLength(); temp++) {
@@ -114,24 +114,5 @@ public class MicroservicePomParser {
                 item.appendChild(document.createTextNode("\n\t"));
             }
         }
-    }
-
-    // Has issues with formatting still... Text nodes have line breaks causing inconsistent formatting.
-    private static void writeXml(Document doc, OutputStream output) throws TransformerException {
-//        doc.normalize(); is this supposed to remove white space?
-
-        TransformerFactory transformerFactory = TransformerFactory.newInstance();
-        Transformer transformer = transformerFactory.newTransformer();
-        DOMSource source = new DOMSource(doc);
-        StreamResult result = new StreamResult(output);
-        doc.normalizeDocument();
-        doc.normalize();
-
-//        transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
-//        transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-//        transformer.setOutputProperty(OutputKeys.STANDALONE, "yes");
-//        transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
-
-        transformer.transform(source, result);
     }
 }

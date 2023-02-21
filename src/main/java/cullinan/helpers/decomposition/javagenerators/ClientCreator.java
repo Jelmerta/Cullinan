@@ -37,7 +37,6 @@ public class ClientCreator {
         addClientMethods();
         addClientConstructors();
 
-        System.out.println(result);
         return result;
     }
 
@@ -102,8 +101,6 @@ public class ClientCreator {
             clientMethod.setType(originalMethod.getType());
         }
         List<CtParameter> parameters = originalMethod.getParameters();
-        System.out.println();
-        System.out.println(clientMethod.getSimpleName());
         // TODO List of readable variables for function call?
 
         // TODO Are there other cases where we need to override? Interfaces?
@@ -180,10 +177,6 @@ public class ClientCreator {
             }).collect(Collectors.toList())
         );
 
-        System.out.println();
-        System.out.println(ctInterface.getReference().getTypeDeclaration());
-        System.out.println(functionName);
-        System.out.println(collect);
         CtExecutableReference interfaceMethod = ctInterface.getReference().getTypeDeclaration().getMethod(functionName, collect.toArray(new CtTypeReference[0])).getReference();
 //        CtExecutableReference interfaceMethod = SpoonMethodManager.findMethod(ctInterface.getReference(), functionName).getReference();
 

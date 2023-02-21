@@ -38,8 +38,6 @@ public class StorageManagerCreator {
             copy.addConstructor(constructor);
         }
 
-        System.out.println(copy);
-
         return copy;
     }
 }

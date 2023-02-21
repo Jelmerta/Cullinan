@@ -184,7 +184,8 @@ public class ServiceCreator {
         CtMethod constructorImplementation = SpoonFactoryManager.getDefaultFactory().createMethod();
         CtTypeReference returnType = SpoonFactoryManager.getDefaultFactory().createCtTypeReference(String.class);
         constructorImplementation.setType(returnType);
-        constructorImplementation.setSimpleName("new" + constructor.getType());
+//        constructorImplementation.setSimpleName("new" + constructor.getType()); // TODO This can be used when auto imports is set to on, otherwise returns fully qualified name
+        constructorImplementation.setSimpleName("new" + originalClass.getSimpleName());
         constructorImplementation.addModifier(ModifierKind.PUBLIC);
 
         CtTypeReference overrideReference = SpoonFactoryManager.getDefaultFactory().createCtTypeReference(Override.class);
@@ -229,12 +230,6 @@ public class ServiceCreator {
                 constructorCall.addArgument(argument);
             }
         }
-
-        System.out.println("null?");
-        System.out.println(originalClassWithId);
-        System.out.println(originalClassWithId.getReference());
-//        originalClassWithId.getMethod()
-        System.out.println(originalClassWithId.getReference().getTypeDeclaration());
 
         CtLocalVariable newObject = SpoonFactoryManager.getDefaultFactory().createLocalVariable(originalClassWithId.getReference(), "newObject", constructorCall.addTypeCast(originalClassWithId.getReference()));
         codeBlock.addStatement(newObject);
@@ -296,10 +291,6 @@ public class ServiceCreator {
         objectCallArguments.add(argument);
         CtInvocation serializationRetrievalCall = SpoonFactoryManager.getDefaultFactory().createInvocation();
 
-        System.out.println("objecttype");
-        System.out.println(storageObjectType);
-//        CtClass storage = storageClasses.get(storageObjectType);
-
         CtExecutableReference serializationGet;
         serializationGet = SpoonMethodManager.findMethod(serializationUtil.getReference(), "decode").getReference();
 
@@ -331,7 +322,6 @@ public class ServiceCreator {
         // Maybe something like a ServiceCreator which keeps track of spoon objects like the interface, impl, clients etc.
 //            CtCodeSnippetStatement emptyStatement = SpoonFactoryManager.getFactory().createCodeSnippetStatement("");
         CtInvocation invocation = SpoonFactoryManager.getDefaultFactory().createInvocation();
-//            CtTypeReference
 
         // TODO Is this how this should be done? Almost no code references to how this should be done. Taken from  https://github.com/INRIA/spoon/blob/master/src/main/java/spoon/reflect/factory/CodeSpoonFactoryManager.getFactory().java
         if (calledObject != null) {

@@ -104,8 +104,6 @@ public class SpoonMethodManager {
         }
 
         for (SpoonParameter parameter : spoonMethod.getParameters()) {
-            System.out.println("methodmanager");
-            System.out.println(parameter.getName());
             method.addParameter(SpoonParameterManager.write(parameter));
         }
 
@@ -120,9 +118,6 @@ public class SpoonMethodManager {
 
     // TODO No parameters yet.
     public static CtMethod findMethod(CtTypeReference classType, String name) {
-//        CtTypeReference<Object> ctTypeReference = factory.createCtTypeReference(classType);
-        System.out.println("methods");
-        System.out.println(classType.getTypeDeclaration().getMethods());
         Set<CtMethod<?>> methods = classType.getTypeDeclaration().getMethods();
         for (CtMethod<?> method : methods) {
             if (method.getSimpleName().equalsIgnoreCase(name)) {

@@ -13,7 +13,7 @@ import java.util.Set;
 public class ServiceInterfaceCreator {
     private final CtClass originalClass;
 
-    public ServiceInterfaceCreator(CtClass originalClass) { // TODO Would prefer to pass serviceDefinition instead of storage
+    public ServiceInterfaceCreator(CtClass originalClass) {
         this.originalClass = originalClass;
     }
 

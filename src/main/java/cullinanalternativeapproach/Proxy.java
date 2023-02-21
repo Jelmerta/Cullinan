@@ -1,29 +1,28 @@
 package cullinanalternativeapproach;
 
-import cullinan.helpers.decomposition.writers.JavaWriter2;
+import cullinan.helpers.decomposition.javagenerators.ProxyCreator;
 import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.CtType;
 
-import java.util.List;
-
-// TODO Maybe define the generator here as well? Every item should have a generator and a way to be written?
 public class Proxy implements Writable2 {
-    CtClass javaProxy;
+    private final CtClass java;
+    private final String serviceOrigin; // Could be ServiceDefinition?
 
-    public Proxy(CtClass javaProxy) {
-        this.javaProxy = javaProxy;
+    public Proxy(OriginalJava originalJava, ReferenceInterface referenceInterface, Client client, SerializationUtil serializationUtil) {
+        ProxyCreator proxyCreator = new ProxyCreator(originalJava.getJava(), referenceInterface.getJava(), client.getJava(), serializationUtil.getJava());
+        this.java = proxyCreator.build();
+        this.serviceOrigin = originalJava.getServiceOrigin();
+    }
+
+    public CtClass getJava() {
+        return java;
     }
 
     @Override
-    public JavaWriter2 createWriter() {
-        return new JavaWriter2(this);
+    public DataWriter2 createWriter() {
+        return new ProxyWriter(this);
     }
 
-    public CtType getJava() {
-        return javaProxy;
-    }
-
-    public List<WriteDefinition> getWriteDefinition() {
-        return List.of(WriteDefinition.MAIN_SERVICE, WriteDefinition.OTHER_MICROSERVICES);
+    public String getServiceOrigin() {
+        return serviceOrigin;
     }
 }

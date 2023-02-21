@@ -90,11 +90,6 @@ public class ProxyCreator {
 
         serviceProxy.addMethod(setReference);
 
-        System.out.println("PROXY");
-        System.out.println(serviceProxy);
-        System.out.println(serviceProxy.getReference());
-        System.out.println(serviceProxy.getReference().getTypeDeclaration());
-
         // TODO We could just use the set function... doesn't really matter though?
         // Add constructor calls and make sure reference id is set
         Set<CtConstructor> constructors = originalClass.getConstructors();
@@ -129,10 +124,6 @@ public class ProxyCreator {
 //                        }
                     }).collect(Collectors.toList())
             );
-            System.out.println();
-            System.out.println(client.getReference().getTypeDeclaration());
-            System.out.println(originalClass.getSimpleName());
-            System.out.println(collect);
 
 //            List<CtParameterReference> collect = parameterList.stream().map(CtParameter::getReference).collect(Collectors.toList());
             CtExecutableReference clientCall = client.getReference().getTypeDeclaration().getMethod("new" + originalClass.getSimpleName(), collect.toArray(new CtTypeReference[0])).getReference();
@@ -199,10 +190,6 @@ public class ProxyCreator {
                     }).collect(Collectors.toList())
             );
 
-            System.out.println();
-            System.out.println(client.getReference().getTypeDeclaration());
-            System.out.println(originalClass.getSimpleName());
-            System.out.println(collect);
             CtExecutableReference clientCall = client.getReference().getTypeDeclaration().getMethod(method.getSimpleName(), collect.toArray(new CtTypeReference[0])).getReference();
 //            CtExecutableReference clientCall = client.getReference().getTypeDeclaration().getMethod("new" + originalClass.getSimpleName(), collect.toArray(new CtTypeReference[0])).getReference();
 //            CtExecutableReference clientCall = SpoonMethodManager.findMethod(client.getReference(), method.getSimpleName()).getReference();// TODO Multiple methods with different params should be taken into account

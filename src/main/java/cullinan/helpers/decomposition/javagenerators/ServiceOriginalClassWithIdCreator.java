@@ -11,6 +11,7 @@ public class ServiceOriginalClassWithIdCreator {
     private final CtInterface referenceInterface;
     private CtClass result;
 
+    // TODO CtType original?
     public ServiceOriginalClassWithIdCreator(CtClass originalClass, CtInterface referenceInterface) {
         this.originalClass = originalClass;
         this.referenceInterface = referenceInterface;
@@ -22,9 +23,6 @@ public class ServiceOriginalClassWithIdCreator {
 //
         this.result = originalClass.clone();
         this.originalClass.getPackage().addType(this.result);
-        System.out.println(this.result);
-        System.out.println(this.result.getReference());
-        System.out.println(this.result.getReference().getTypeDeclaration());
 
         this.result.addSuperInterface(referenceInterface.getReference());
 
@@ -34,11 +32,6 @@ public class ServiceOriginalClassWithIdCreator {
 
         // TODO Add get function for retrieval of reference ids
         // TODO How do we initialize this value? Do we need a setter?
-
-        System.out.println("OKAY ACTUAL CLASS");
-        System.out.println(this.result);
-        System.out.println(this.result.getReference());
-        System.out.println(this.result.getReference().getTypeDeclaration());
 
         return this.result;
     }

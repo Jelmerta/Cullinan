@@ -28,7 +28,7 @@ public class DataGenerator {
         generatedData = generateHelperData(generatedData);
         generatedData = generateClassData(generatedData, microservices);
         generatedData = generateServiceData(generatedData, microservices);
-        generatedData = generateUnimplementedData(generatedData);
+        generatedData = generateUnimplementedData(generatedData, microservices);
 
         return generatedData;
     }
@@ -84,8 +84,9 @@ public class DataGenerator {
         return generatedData;
     }
 
-    private GeneratedData generateUnimplementedData(GeneratedData generatedData) {
+    private GeneratedData generateUnimplementedData(GeneratedData generatedData, List<Microservice> microservices) {
         List<CtType<?>> allTypes = factory.Class().getAll();
+
         UnimplementedTypeGenerator unimplementedTypeGenerator = new UnimplementedTypeGenerator();
         List<CtType> unimplementedTypes = unimplementedTypeGenerator.generate(allTypes);
 

@@ -1,10 +1,6 @@
 package cullinan.helpers.decomposition.writers;
 
-import cullinanalternativeapproach.Proxy;
-import cullinanalternativeapproach.DataWriter2;
-import cullinanalternativeapproach.ServiceDefinition;
-import cullinanalternativeapproach.ServiceType;
-import cullinanalternativeapproach.WriteDefinition;
+import cullinanalternativeapproach.*;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.visitor.PrettyPrinter;
 import spoon.support.JavaOutputProcessor;
@@ -14,10 +10,11 @@ import java.io.File;
 import java.util.List;
 
 public class JavaWriter2 implements DataWriter2 {
-    private final CtType java;
-    private final List<WriteDefinition> writeDefinitions;
+    private final CtType java; // What to write
+    private final List<WriteDefinition> writeDefinitions; // Where to write
 
-    private static final JavaOutputProcessor processor;
+    private static final JavaOutputProcessor processor; // How to write
+
     static {
         PrettyPrinter prettyPrinterAutoImport = SpoonFactoryManager.getDefaultFactory().getEnvironment().createPrettyPrinterAutoImport();
         processor = new JavaOutputProcessor(prettyPrinterAutoImport);
@@ -26,9 +23,24 @@ public class JavaWriter2 implements DataWriter2 {
 
     // Maybe this is a proxywriter... All definitions from proxy
     // Maybe just pass the writeDefinitions? Keeps one constructor, only CtType and WriteDefinitions?
-    public JavaWriter2(Proxy proxy) {
-        this.java = proxy.getJava();
-        this.writeDefinitions = proxy.getWriteDefinition();
+//    public JavaWriter2(ProxyWritable proxy) {
+//        this.java = proxy.getJava();
+//        this.writeDefinitions = proxy.getWriteDefinition();
+//    }
+
+    public JavaWriter2(CtType java, List<WriteDefinition> writeDefinitions) {
+        this.java = java;
+        this.writeDefinitions = writeDefinitions;
+    }
+
+    // Probably needs a certain type of writable to work...
+//    public JavaWriter2(Writable2 writable2) {
+//
+//    }
+
+    @Override
+    public boolean shouldWrite(ServiceDefinition serviceDefinition) {
+        return false;
     }
 
     @Override
@@ -39,27 +51,5 @@ public class JavaWriter2 implements DataWriter2 {
 
         processor.getEnvironment().setSourceOutputDirectory(new File(serviceDefinition.getOutputPath().toString() + "/src/main/java"));
         processor.createJavaFile(java);
-    }
-
-    private boolean shouldWrite(ServiceDefinition serviceDefinition) {
-        if (serviceDefinition.getServiceType().equals(ServiceType.MAIN_SERVICE)) {
-            return writeDefinitions.contains(WriteDefinition.MAIN_SERVICE);
-        }
-
-        if (serviceDefinition.getServiceType().equals(ServiceType.INTERFACE_MODULE)) {
-            return writeDefinitions.contains(WriteDefinition.INTERFACE_MODULE);
-        }
-
-        if (serviceDefinition.getServiceType().equals(ServiceType.MICROSERVICE)) {
-            if (writeDefinitions.contains(WriteDefinition.OTHER_MICROSERVICES)) {
-                return !serviceDefinition.getClassNames().contains(java.getQualifiedName());
-            }
-
-            if (writeDefinitions.contains(WriteDefinition.THIS_MICROSERVICE)) {
-                return serviceDefinition.getClassNames().contains(java.getQualifiedName());
-            }
-        }
-
-        return false;
     }
 }
