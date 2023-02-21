@@ -1,39 +1,38 @@
 package cullinan.helpers.decomposition.generators.model;
 
-import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.CtInterface;
-
-import java.util.Collection;
+import generatedfiles.Client;
+import generatedfiles.Service;
+import generatedfiles.ServiceInterface;
 
 public class GeneratedClientService {
-    private CtInterface serviceInterface;
-    private CtClass client;
-    private CtClass service;
+    private ServiceInterface serviceInterface;
+    private Client client;
+    private Service service;
 
     public GeneratedClientService() {
     }
 
-    public void addServiceInterface(CtInterface serviceInterface) {
+    public void addServiceInterface(ServiceInterface serviceInterface) {
         this.serviceInterface = serviceInterface;
     }
 
-    public void addClient(CtClass client) {
+    public void addClient(Client client) {
         this.client = client;
     }
 
-    public void addService(CtClass service) {
+    public void addService(Service service) {
         this.service = service;
     }
 
-    public CtInterface getInterface() {
+    public ServiceInterface getInterface() {
         return serviceInterface;
     }
 
-    public CtClass getService() {
+    public Service getService() {
         return service;
     }
 
-    public CtClass getClient() {
+    public Client getClient() {
         return client;
     }
 }

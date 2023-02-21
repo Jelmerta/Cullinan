@@ -1,44 +1,50 @@
 package cullinan.helpers.decomposition.generators.model;
 
-import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.CtInterface;
+
+import generatedfiles.*;
+
+import java.util.List;
 
 // Helpers are identical in every service
 public class GeneratedHelperClasses {
-    private CtClass referenceId;
-    private CtInterface referenceInterface;
-    private CtClass storageClass; // Could be an interface. Currently using an in-mem database, but could be a real database.
-    private CtClass serializationUtil;
+    private ReferenceId referenceId;
+    private ReferenceInterface referenceInterface;
+    private Storage storage; // Could be an interface. Currently using an in-mem database, but could be a real database.
+    private SerializationUtil serializationUtil;
 
-    public void addReferenceId(CtClass referenceId) {
+    public void addReferenceId(ReferenceId referenceId) {
         this.referenceId = referenceId;
     }
 
-    public void addReferenceInterface(CtInterface referenceInterface) {
+    public void addReferenceInterface(ReferenceInterface referenceInterface) {
         this.referenceInterface = referenceInterface;
     }
 
-    public void addStorageClass(CtClass storageClass) {
-        this.storageClass = storageClass;
+    public void addStorageClass(Storage storage) {
+        this.storage = storage;
     }
 
-    public void addSerializationUtil(CtClass serializationUtil) {
+    public void addSerializationUtil(SerializationUtil serializationUtil) {
         this.serializationUtil = serializationUtil;
     }
 
-    public CtInterface getReferenceInterface() {
+    public ReferenceInterface getReferenceInterface() {
         return referenceInterface;
     }
 
-    public CtClass getStorageClass() {
-        return storageClass;
+    public Storage getStorageClass() {
+        return storage;
     }
 
-    public CtClass getSerializationUtil() {
+    public SerializationUtil getSerializationUtil() {
         return serializationUtil;
     }
 
-    public CtClass getReferenceId() {
+    public ReferenceId getReferenceId() {
         return referenceId;
+    }
+
+    public List<Writable> getAllWritables() {
+        return List.of(referenceInterface, storage, serializationUtil, referenceId);
     }
 }

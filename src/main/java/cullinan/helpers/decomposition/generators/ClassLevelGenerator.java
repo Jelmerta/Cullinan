@@ -1,16 +1,10 @@
 package cullinan.helpers.decomposition.generators;
 
-import cullinan.helpers.decomposition.javagenerators.ProxyCreator;
-import cullinan.helpers.decomposition.javagenerators.ServiceCreator;
-import cullinan.helpers.decomposition.javagenerators.ServiceInterfaceCreator;
-import cullinan.helpers.decomposition.javagenerators.ServiceOriginalClassWithIdCreator;
-import cullinan.helpers.decomposition.javagenerators.ClientCreator;
-import cullinan.helpers.decomposition.generators.model.GeneratedData;
 import cullinan.helpers.decomposition.generators.model.GeneratedClassLevel;
 import cullinan.helpers.decomposition.generators.model.GeneratedClientService;
+import cullinan.helpers.decomposition.generators.model.GeneratedData;
 import cullinan.helpers.decomposition.generators.model.GeneratedHelperClasses;
-import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.CtInterface;
+import generatedfiles.*;
 
 public class ClassLevelGenerator {
     private final GeneratedData generatedData;
@@ -23,25 +17,24 @@ public class ClassLevelGenerator {
         this.generatedData = generatedData;
     }
 
-    public GeneratedClassLevel generate(CtClass originalClass) {
+    public GeneratedClassLevel generate(OriginalJava originalJava) {
         GeneratedHelperClasses helpers = generatedData.getHelpers();
 
-        CtInterface referenceInterface = helpers.getReferenceInterface();
-        CtClass storageClass = helpers.getStorageClass(); // TODO Should require reference interface and set id
-        CtClass serializationUtil = helpers.getSerializationUtil();
+        ReferenceInterface referenceInterface = helpers.getReferenceInterface();
+        Storage storage = helpers.getStorageClass(); // TODO Should require reference interface and set id
+        SerializationUtil serializationUtil = helpers.getSerializationUtil();
 
-        CtClass serviceOriginalClass = new ServiceOriginalClassWithIdCreator(originalClass, referenceInterface).build();
-        CtInterface serviceInterface = new ServiceInterfaceCreator(originalClass).buildInterface();
-        CtClass client = new ClientCreator(originalClass, serviceInterface, serializationUtil).build();
-        CtClass service = new ServiceCreator(originalClass, serviceInterface, storageClass, serializationUtil, serviceOriginalClass).build(); // TODO Should only need original class. Currently only using setId from classWithId, but id should be set in storagemanager anyway.
-        CtClass proxy = new ProxyCreator(originalClass, referenceInterface, client, serializationUtil).build();
+        Implementation serviceOriginalClass = new Implementation(originalJava, referenceInterface);
+        ServiceInterface serviceInterface = new ServiceInterface(originalJava);
+        Client client = new Client(originalJava, serviceInterface, serializationUtil);
+        Service service = new Service(originalJava, serviceInterface, storage, serializationUtil, serviceOriginalClass); // TODO Should only need original class. Currently only using setId from classWithId, but id should be set in storagemanager anyway.
+        Proxy proxy = new Proxy(originalJava, referenceInterface, client, serializationUtil);
 
         GeneratedClientService generatedClientService = new GeneratedClientService();
         generatedClientService.addServiceInterface(serviceInterface);
         generatedClientService.addClient(client);
         generatedClientService.addService(service);
 
-        String qualifiedName = originalClass.getQualifiedName();
-        return new GeneratedClassLevel(qualifiedName, serviceOriginalClass, generatedClientService, proxy);
+        return new GeneratedClassLevel(originalJava.getJava().getQualifiedName(), serviceOriginalClass, generatedClientService, proxy);
     }
 }

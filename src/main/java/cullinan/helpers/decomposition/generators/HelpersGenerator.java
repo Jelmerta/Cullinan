@@ -1,12 +1,10 @@
 package cullinan.helpers.decomposition.generators;
 
-import cullinan.helpers.decomposition.javagenerators.ReferenceInterfaceCreator;
-import cullinan.helpers.decomposition.javagenerators.SerializationUtilCreator;
-import cullinan.helpers.decomposition.javagenerators.StorageManagerCreator;
-import cullinan.helpers.decomposition.javagenerators.CullinanIdCreator;
 import cullinan.helpers.decomposition.generators.model.GeneratedHelperClasses;
-import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.CtInterface;
+import generatedfiles.ReferenceId;
+import generatedfiles.ReferenceInterface;
+import generatedfiles.SerializationUtil;
+import generatedfiles.Storage;
 
 public class HelpersGenerator {
     public HelpersGenerator() {
@@ -16,16 +14,16 @@ public class HelpersGenerator {
     public GeneratedHelperClasses generate() {
         GeneratedHelperClasses generatedHelperClasses = new GeneratedHelperClasses();
 
-        CtClass referenceId = new CullinanIdCreator().build();
+        ReferenceId referenceId = new ReferenceId();
         generatedHelperClasses.addReferenceId(referenceId);
 
-        CtInterface referenceInterface = new ReferenceInterfaceCreator().build();
+        ReferenceInterface referenceInterface = new ReferenceInterface();
         generatedHelperClasses.addReferenceInterface(referenceInterface);
 
-        CtClass storage = new StorageManagerCreator().build();
+        Storage storage = new Storage();
         generatedHelperClasses.addStorageClass(storage);
 
-        CtClass serializationUtil = new SerializationUtilCreator().build();
+        SerializationUtil serializationUtil = new SerializationUtil();
         generatedHelperClasses.addSerializationUtil(serializationUtil);
 
         return generatedHelperClasses;

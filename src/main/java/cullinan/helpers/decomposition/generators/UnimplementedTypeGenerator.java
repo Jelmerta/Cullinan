@@ -1,10 +1,10 @@
 package cullinan.helpers.decomposition.generators;
 
+import generatedfiles.UnimplementedType;
 import spoon.reflect.code.CtNewClass;
 import spoon.reflect.code.CtStatement;
 import spoon.reflect.code.CtThrow;
-import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.*;
 import spoonhelpers.managers.SpoonFactoryManager;
 
 import java.util.ArrayList;
@@ -16,24 +16,25 @@ public class UnimplementedTypeGenerator {
 
     }
 
-    public List<CtType> generate(List<CtType<?>> types) {
-        List<CtType> unimplementedTypes = new ArrayList<>();
+    public List<UnimplementedType> generate(List<CtType<?>> types) {
+        List<UnimplementedType> unimplementedTypes = new ArrayList<>();
         for (CtType type : types) {
             if (!type.isClass() && !type.isEnum() && !type.isInterface()) {
                 continue;
             }
 
+            // TODO wtf didnt we clone this? does this not give issues?
             unimplementedTypes.add(generate(type));
         }
         return unimplementedTypes;
     }
 
     // TODO We do not clone here? We should probably generate new thing?
-    private CtType generate(CtType type) {
+    private UnimplementedType generate(CtType type) {
         if (type.isInterface()) {
-            return type; // Interface does not require any changes
+            return new UnimplementedType(type); // Interface does not require any changes
         } else if (type.isClass() || type.isEnum()) {
-            return emptyMethodBodies(type);
+            return new UnimplementedType(emptyMethodBodies(type));
         } else {
             throw new IllegalStateException("Unexpected type?");
         }

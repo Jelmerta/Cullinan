@@ -1,7 +1,9 @@
 package cullinan.helpers.decomposition.writers;
 
-import java.nio.file.Path;
+import generatedfiles.ServiceDefinition;
 
+// I know where to write and how to write and what to write!
 public interface DataWriter {
-    void write(Path path);
+    boolean shouldWrite(ServiceDefinition serviceDefinition);
+    void write(ServiceDefinition serviceDefinition);
 }

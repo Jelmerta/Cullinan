@@ -1,51 +1,111 @@
+package cullinanalternativeapproach;
+
 import cullinan.helpers.decomposition.generators.DataGenerator;
 import cullinan.helpers.decomposition.generators.model.GeneratedData;
-import cullinan.helpers.decomposition.servicecreators.InterfaceModuleCreator;
-import cullinan.helpers.decomposition.servicecreators.MainServiceCreator;
-import cullinan.helpers.decomposition.servicecreators.MicroserviceCreator;
+import cullinan.helpers.decomposition.writers.DataWriter;
+import cullinan.helpers.decomposition.writers.ServiceType;
 import cullinan.helpers.other.DirectoryCopier;
+import generatedfiles.ServiceDefinition;
+import generatedfiles.Writable;
 import input.DecompositionInputReader;
 import input.IdentifiedServiceCut;
 import input.Microservice;
+import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
 import spoon.reflect.factory.Factory;
 import spoonhelpers.managers.SpoonFactoryManager;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Cullinan {
-    private static final String DECOMPOSITION_INPUT_JSON = "decomposition_input.json";
-    private static final String SOURCE_PATH_ROOT = "dddsample-core-master";
-    private static final String SOURCE_PATH_JAVA = SOURCE_PATH_ROOT + "/src/main/java";
-    private static final String DEFAULT_OUTPUT_PATH = SOURCE_PATH_ROOT + "_decomposed/";
-    private static final String MAIN_SERVICE_OUTPUT_PATH = DEFAULT_OUTPUT_PATH + "monolith/"; // TODO Original name? no Main?
-    private static final String INTERFACES_MODULE_OUTPUT_PATH = DEFAULT_OUTPUT_PATH + "serviceinterfaces/";
+    private static final String DECOMPOSITION_INPUT_JSON = "../decomposition_input.json";
+    private static final Path SOURCE_PATH_ROOT = Path.of("../dddsample-core-master");
+    private static final Path SOURCE_PATH_JAVA = Path.of(SOURCE_PATH_ROOT + "/src/main/java");
+    private static final Path DEFAULT_OUTPUT_PATH = Path.of(SOURCE_PATH_ROOT + "_decomposed");
+    private static final Path MAIN_SERVICE_OUTPUT_PATH = Path.of(DEFAULT_OUTPUT_PATH + "/monolith"); // TODO Original name? no Main?
+    private static final Path INTERFACES_MODULE_OUTPUT_PATH = Path.of(DEFAULT_OUTPUT_PATH + "/serviceinterfaces");
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, ParserConfigurationException, SAXException {
+        System.out.println("Starting decomposition");
+        long startTime = System.currentTimeMillis();
+        long currentTime;
+
+        currentTime = System.currentTimeMillis();
+        System.out.println("Reading decomposition input file. Time passed: " + (currentTime - startTime) / 1000 + " seconds");
         IdentifiedServiceCut serviceCut = DecompositionInputReader.getIdentifiedServiceCut(DECOMPOSITION_INPUT_JSON);
+        System.out.println();
 
-        DirectoryCopier.copyFolder(Path.of(SOURCE_PATH_ROOT), Path.of(MAIN_SERVICE_OUTPUT_PATH));
+        currentTime = System.currentTimeMillis();
+        System.out.println("Defining services. Time passed: " + (currentTime - startTime) / 1000.0 + " seconds");
+        // TODO Add service during generation of classes to the writable?
+        List<ServiceDefinition> serviceDefinitions = new ArrayList<>();
+        ServiceDefinition main = new ServiceDefinition(ServiceType.MAIN_SERVICE, "main", MAIN_SERVICE_OUTPUT_PATH, List.of("Application"));
+        serviceDefinitions.add(main);
+        ServiceDefinition interfaceModule = new ServiceDefinition(ServiceType.INTERFACE_MODULE, "clientinterfaces", INTERFACES_MODULE_OUTPUT_PATH, List.of());
+        serviceDefinitions.add(interfaceModule);
+        for (Microservice microserviceInput : serviceCut.getMicroservices()) {
+            ServiceDefinition microservice = new ServiceDefinition(ServiceType.MICROSERVICE, microserviceInput.getName().toLowerCase(), Path.of(DEFAULT_OUTPUT_PATH.toString() + "/" + microserviceInput.getName().toLowerCase() + "/"), microserviceInput.getIdentifiedClasses());
+            serviceDefinitions.add(microservice);
+        }
+        System.out.println();
 
-        Factory codebaseFactory = SpoonFactoryManager.getFactory(Path.of(SOURCE_PATH_JAVA));
+        currentTime = System.currentTimeMillis();
+        System.out.println("Copying original code base to new destination. Time passed: " + (currentTime - startTime) / 1000.0 + " seconds");
+        DirectoryCopier.copyFolder(SOURCE_PATH_ROOT, MAIN_SERVICE_OUTPUT_PATH);
+        System.out.println();
 
-        DataGenerator dataGenerator = new DataGenerator(codebaseFactory);
+        currentTime = System.currentTimeMillis();
+        System.out.println("Reading in original code base. Time passed: " + (currentTime - startTime) / 1000.0 + " seconds");
+        Factory codebaseFactory = SpoonFactoryManager.getFactory(SOURCE_PATH_JAVA);
+        System.out.println();
+
+        currentTime = System.currentTimeMillis();
+        System.out.println("Reading original pom file (we assume a pom file exists! No other build automation tools currently supported). Time passed: " + (currentTime - startTime) / 1000.0 + " seconds");
+        Document originalPom = pomReader();
+        System.out.println();
+
+        currentTime = System.currentTimeMillis();
+        System.out.println("Generating required classes and additional files for new partitions. Time passed: " + (currentTime - startTime) / 1000.0 + " seconds");
+        DataGenerator dataGenerator = new DataGenerator(codebaseFactory, originalPom);
         GeneratedData generatedData = dataGenerator.generate(serviceCut.getMicroservices());
+        List<Writable> writables = generatedData.getWritables();
+        System.out.println();
 
-        MainServiceCreator mainServiceCreator = new MainServiceCreator(generatedData);
-        InterfaceModuleCreator interfaceModuleCreator = new InterfaceModuleCreator(generatedData);
-        List<MicroserviceCreator> microserviceCreators = new ArrayList<>();
-        for (Microservice microservice : serviceCut.getMicroservices()) {
-            microserviceCreators.add(new MicroserviceCreator(generatedData, microservice));
+        currentTime = System.currentTimeMillis();
+        System.out.println("Generating data writers. Time passed: " + (currentTime - startTime) / 1000.0 + " seconds");
+        List<DataWriter> dataWriters = new ArrayList<>();
+        for (Writable writable : writables) {
+            dataWriters.add(writable.createWriter());
         }
+        System.out.println();
 
-        // Make sure to generate all writers before writing everything to file. Maybe make a DecompositionCreator containing this fact?
-        mainServiceCreator.create(Path.of(MAIN_SERVICE_OUTPUT_PATH));
-        interfaceModuleCreator.create(Path.of(INTERFACES_MODULE_OUTPUT_PATH));
-        for (MicroserviceCreator microserviceCreator : microserviceCreators) {
-            Path servicePath = Path.of(DEFAULT_OUTPUT_PATH + microserviceCreator.getServiceName().toLowerCase());
-            microserviceCreator.create(servicePath);
+        currentTime = System.currentTimeMillis();
+        System.out.println("Writing partitions. Time passed: " + (currentTime - startTime) / 1000.0 + " seconds");
+        // TODO We could make a verifier before writing, no clashing: multiple writers wanting to write to same file
+        for (ServiceDefinition serviceDefinition : serviceDefinitions) {
+            System.out.println("Writing to service: " + serviceDefinition.getName());
+            for (DataWriter dataWriter : dataWriters) {
+                if (dataWriter.shouldWrite(serviceDefinition)) {
+                    dataWriter.write(serviceDefinition);
+                }
+            }
         }
+        System.out.println();
+
+        currentTime = System.currentTimeMillis();
+        System.out.println("Finished decomposition of services. Time passed: " + (currentTime - startTime) / 1000.0 + " seconds");
+    }
+
+    // This solution is ugly, passing the document around...
+    private static Document pomReader() throws IOException, SAXException, ParserConfigurationException {
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        DocumentBuilder db = dbf.newDocumentBuilder();
+        return db.parse(SOURCE_PATH_ROOT + "/pom.xml");
     }
 }

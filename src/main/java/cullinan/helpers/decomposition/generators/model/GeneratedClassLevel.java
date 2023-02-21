@@ -1,17 +1,22 @@
 package cullinan.helpers.decomposition.generators.model;
 
-import spoon.reflect.declaration.CtClass;
+import generatedfiles.Implementation;
+import generatedfiles.Proxy;
+import generatedfiles.Writable;
+
+import java.util.Collection;
+import java.util.List;
 
 // TODO Maybe we should just put the original class? Many nullable fields...
 public class GeneratedClassLevel {
     private final String originalFullyQualifiedClassname;
-    private final CtClass serviceOriginalClass; // Basically the original class: but with a reference id added to refer to it in other services using their proxies. When constructed, added to an in-mem database for now.private java.util.Map<spoon.reflect.declaration.CtClass,spoon.reflect.declaration.CtInterface> interfaces;private java.util.Map<spoon.reflect.declaration.CtClass,spoon.reflect.declaration.CtClass> services;private java.util.Map<spoon.reflect.declaration.CtClass,spoon.reflect.declaration.CtClass> clients;private final java.util.Map<spoon.reflect.declaration.CtClass,spoon.reflect.declaration.CtClass> proxies; // Proxies are a little special: they need to be generated before all services are written as all services can make use of the proxy. Not used in the resulting service.
+    private final Implementation implementation;
     private final GeneratedClientService generatedClientService;
-    private final CtClass proxy;
+    private final Proxy proxy;
 
-    public GeneratedClassLevel(String originalFullyQualifiedClassname, CtClass serviceOriginalClass, GeneratedClientService generatedClientService, CtClass proxy) {
+    public GeneratedClassLevel(String originalFullyQualifiedClassname, Implementation implementation, GeneratedClientService generatedClientService, Proxy proxy) {
         this.originalFullyQualifiedClassname = originalFullyQualifiedClassname;
-        this.serviceOriginalClass = serviceOriginalClass;
+        this.implementation = implementation;
         this.generatedClientService = generatedClientService;
         this.proxy = proxy;
     }
@@ -24,11 +29,15 @@ public class GeneratedClassLevel {
         return generatedClientService;
     }
 
-    public CtClass getProxy() {
+    public Proxy getProxy() {
         return proxy;
     }
 
-    public CtClass getServiceOriginalClass() {
-        return serviceOriginalClass;
+    public Implementation getImplementation() {
+        return implementation;
+    }
+
+    public Collection<Writable> getAllWritables() {
+        return List.of(implementation, generatedClientService.getInterface(), generatedClientService.getService(), generatedClientService.getClient(), proxy);
     }
 }

@@ -1,23 +1,26 @@
 package cullinan.helpers.decomposition.generators;
 
-import cullinan.helpers.decomposition.generators.model.GeneratedClassLevel;
-import cullinan.helpers.decomposition.generators.model.GeneratedData;
-import cullinan.helpers.decomposition.generators.model.GeneratedHelperClasses;
-import cullinan.helpers.decomposition.generators.model.GeneratedServiceLevel;
+import cullinan.helpers.decomposition.generators.model.*;
+import generatedfiles.OriginalJava;
+import generatedfiles.UnimplementedType;
 import input.Microservice;
+import org.w3c.dom.Document;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class DataGenerator {
     private final Factory factory;
+    private final Document originalPom;
 
     private GeneratedData generatedData = new GeneratedData();
 
-    public DataGenerator(Factory factory) {
+    public DataGenerator(Factory factory, Document originalPom) {
         this.factory = factory;
+        this.originalPom = originalPom;
     }
 
 
@@ -27,7 +30,7 @@ public class DataGenerator {
     public GeneratedData generate(List<Microservice> microservices) {
         generatedData = generateHelperData(generatedData);
         generatedData = generateClassData(generatedData, microservices);
-        generatedData = generateServiceData(generatedData, microservices);
+        generatedData = generateServiceData(generatedData, originalPom, microservices);
         generatedData = generateUnimplementedData(generatedData, microservices);
 
         return generatedData;
@@ -48,47 +51,68 @@ public class DataGenerator {
     }
 
     private GeneratedData generateClassData(GeneratedData generatedData, Microservice microservice) {
-        for (String fullyQualifiedClass : microservice.getIdentifiedClasses()) {
+        for (String fullyQualifiedClass : microservice.getIdentifiedClasses()) { // TODO Here we have information on service, maybe store
             CtClass objectCtClass = factory.Class().get(fullyQualifiedClass); // TODO Could be enum? interface?
-            generatedData = generateClassData(generatedData, objectCtClass);
+            OriginalJava originalJava = new OriginalJava(objectCtClass, microservice);
+            generatedData = generateClassData(generatedData, originalJava);
         }
         return generatedData;
     }
 
-    private GeneratedData generateClassData(GeneratedData generatedData, CtClass ctClass) {
+    private GeneratedData generateClassData(GeneratedData generatedData, OriginalJava originalJava) {
         ClassLevelGenerator classLevelGenerator = new ClassLevelGenerator(generatedData);
-        GeneratedClassLevel classLevel = classLevelGenerator.generate(ctClass);
+        GeneratedClassLevel classLevel = classLevelGenerator.generate(originalJava);
         generatedData.addGeneratedClassLevel(classLevel);
         return generatedData;
     }
 
-    private GeneratedData generateServiceData(GeneratedData generatedData, List<Microservice> microservices) {
-        generatedData = generateMainServiceData(generatedData);
+    private GeneratedData generateServiceData(GeneratedData generatedData, Document originalPom, List<Microservice> microservices) {
+        generatedData = generateMainServiceData(generatedData, originalPom);
+        generatedData = generateInterfaceServiceData(generatedData);
         for (Microservice microservice : microservices) {
-            generatedData = generateServiceData(generatedData, microservice);
+            generatedData = generateMicroserviceData(generatedData,originalPom, microservice);
         }
         return generatedData;
     }
 
-    private GeneratedData generateMainServiceData(GeneratedData generatedData) {
-        ServiceLevelGenerator serviceLevelGenerator = new ServiceLevelGenerator(generatedData);
-        GeneratedServiceLevel generatedServiceLevel = serviceLevelGenerator.generateMainService();
-        generatedData.addGeneratedServiceLevel(generatedServiceLevel);
+    private GeneratedData generateMainServiceData(GeneratedData generatedData, Document originalPom) {
+        MainLevelGenerator mainLevelGenerator = new MainLevelGenerator(generatedData, originalPom);
+        GeneratedMainServiceLevel generatedMainServiceLevel = mainLevelGenerator.generateMainService();
+        generatedData.addGeneratedMainServiceLevel(generatedMainServiceLevel);
         return generatedData;
     }
 
-    private GeneratedData generateServiceData(GeneratedData generatedData, Microservice microservice) {
-        ServiceLevelGenerator serviceLevelGenerator = new ServiceLevelGenerator(generatedData);
+    private GeneratedData generateInterfaceServiceData(GeneratedData generatedData) {
+        InterfaceLevelGenerator interfaceLevelGenerator = new InterfaceLevelGenerator();
+        GeneratedInterfaceServiceLevel generatedInterfaceServiceLevel = interfaceLevelGenerator.generate();
+        generatedData.addGeneratedInterfaceServiceLevel(generatedInterfaceServiceLevel);
+        return generatedData;
+    }
+
+    private GeneratedData generateMicroserviceData(GeneratedData generatedData, Document originalPom, Microservice microservice) {
+        ServiceLevelGenerator serviceLevelGenerator = new ServiceLevelGenerator(generatedData, originalPom);
         GeneratedServiceLevel generatedServiceLevel = serviceLevelGenerator.generateMicroservice(microservice);
         generatedData.addGeneratedServiceLevel(generatedServiceLevel);
         return generatedData;
     }
 
     private GeneratedData generateUnimplementedData(GeneratedData generatedData, List<Microservice> microservices) {
-        List<CtType<?>> allTypes = factory.Class().getAll();
+        List<CtType<?>> allTypes = factory.Class().getAll(); // Data is not in Generated Data. We also go over types such as enum, interfaces, classes, and others so we probably do need the factory for this data.
+        // For all service classes, we don't need an unimplemented version... Also gives some issues with duplicate proxy/unimplemented version...
+        // I guess in a better version we would want unimplemented versions if a proxy is not used...
+        List<String> allServiceClasses = microservices.stream()
+                .map(Microservice::getIdentifiedClasses)
+                .flatMap(List::stream)
+                .map(String::toLowerCase)
+                .toList();
+
+        // This gets rid of all classes that are service classes: Instead we will write either the implementation or a proxy version.
+        List<CtType<?>> requiredUnimplementedTypes = allTypes.stream()
+                .filter(ctType -> !allServiceClasses.contains(ctType.getQualifiedName().toLowerCase()))
+                .collect(Collectors.toList());
 
         UnimplementedTypeGenerator unimplementedTypeGenerator = new UnimplementedTypeGenerator();
-        List<CtType> unimplementedTypes = unimplementedTypeGenerator.generate(allTypes);
+        List<UnimplementedType> unimplementedTypes = unimplementedTypeGenerator.generate(requiredUnimplementedTypes);
 
         unimplementedTypes.forEach(generatedData::addUnimplementedData);
         return generatedData;

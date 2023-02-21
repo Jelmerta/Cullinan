@@ -1,17 +1,17 @@
 package cullinan.helpers.decomposition.generators.model;
 
-import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.CtInterface;
-import spoon.reflect.declaration.CtType;
+import generatedfiles.*;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class GeneratedData {
     private GeneratedHelperClasses generatedHelperClasses;
+    private GeneratedMainServiceLevel generatedMainServiceLevel;
+    private GeneratedInterfaceServiceLevel generatedInterfaceServiceLevel;
     private Map<String, GeneratedServiceLevel> generatedServiceLevels = new HashMap<>();
     private Map<String, GeneratedClassLevel> generatedClassLevels = new HashMap<>();
-    private Map<String, CtType> unimplementedTypeMap = new HashMap<>();
+    private Map<String, UnimplementedType> unimplementedTypeMap = new HashMap<>();
 
     public GeneratedData() {
     }
@@ -24,100 +24,56 @@ public class GeneratedData {
         this.generatedClassLevels.put(generatedClassLevel.getOriginalFullyQualifiedClassname(), generatedClassLevel);
     }
 
+    public void addGeneratedMainServiceLevel(GeneratedMainServiceLevel generatedMainServiceLevel) {
+        this.generatedMainServiceLevel = generatedMainServiceLevel;
+    }
+
+    public void addGeneratedInterfaceServiceLevel(GeneratedInterfaceServiceLevel generatedInterfaceServiceLevel) {
+        this.generatedInterfaceServiceLevel = generatedInterfaceServiceLevel;
+    }
+
     public void addGeneratedServiceLevel(GeneratedServiceLevel generatedServiceLevel) {
         this.generatedServiceLevels.put(generatedServiceLevel.getServiceName(), generatedServiceLevel);
     }
 
-    public void addUnimplementedData(CtType unimplementedType) {
-        this.unimplementedTypeMap.put(unimplementedType.getQualifiedName(), unimplementedType);
+    public void addUnimplementedData(UnimplementedType unimplementedType) {
+        this.unimplementedTypeMap.put(unimplementedType.getJava().getQualifiedName(), unimplementedType);
 
     }
 
-//    public GeneratedHelperClasses getHelpers() {
-//        return generatedHelperClasses;
-//    }
-
-//    public Map<String, GeneratedServiceLevel> getGeneratedServiceLevels() {
-//        return generatedServiceLevels;
-//    }
-
-//    public GeneratedClassLevel getGeneratedClassLevel(String serviceClassName) {
-//        return generatedClassLevels.get(serviceClassName);
-//    }
-
-//    public Collection<GeneratedClassLevel> getGeneratedClassLevels() {
-//        return generatedClassLevels.values();
-//    }
-
-    public CtClass getSerializationUtil() {
+    public SerializationUtil getSerializationUtil() {
         return generatedHelperClasses.getSerializationUtil();
     }
 
-    public List<CtClass> getProxies() {
-        return generatedClassLevels.values().stream()
-                .map(GeneratedClassLevel::getProxy)
-                .collect(Collectors.toList());
-    }
-
-    // The required proxies for a service are, for now, all the proxies except for the ones in the service itself. We provide the classes in the service as argument
-    // We could make this easier by having a Proxy object that keeps track of information such as its service.
-    public List<CtClass> getFilteredProxies(List<String> filteredClasses) {
-        return generatedClassLevels.keySet().stream()
-                .filter(className -> !filteredClasses.contains(className))
-                .map(className -> generatedClassLevels.get(className))
-                .map(GeneratedClassLevel::getProxy)
-                .collect(Collectors.toList());
-    }
-
-    public List<CtClass> getClients() {
-        return generatedClassLevels.values().stream()
-                .map(generatedClassLevel -> generatedClassLevel.getGeneratedClientService().getClient())
-                .collect(Collectors.toList());
-    }
-
-    public List<CtClass> getFilteredClients(List<String> filteredClasses) {
-        return generatedClassLevels.keySet().stream()
-                .filter(className -> !filteredClasses.contains(className))
-                .map(className -> generatedClassLevels.get(className))
-                .map(classLevel -> classLevel.getGeneratedClientService().getClient())
-                .collect(Collectors.toList());
-    }
-
-    public List<CtType> getFilteredNotImplementedTypes(List<String> filteredClasses) {
-        return unimplementedTypeMap.keySet().stream()
-                .filter(className -> !filteredClasses.contains(className))
-                .map(className -> unimplementedTypeMap.get(className))
-                .collect(Collectors.toList());    }
-
-    public CtClass getReferenceId() {
+    public ReferenceId getReferenceId() {
         return generatedHelperClasses.getReferenceId();
     }
 
-    public CtInterface getReferenceInterface() {
+    public ReferenceInterface getReferenceInterface() {
         return generatedHelperClasses.getReferenceInterface();
     }
 
-    public CtClass getClassDefinitions(String serviceName) {
+    public ClassDefinitions getClassDefinitions(String serviceName) {
         return generatedServiceLevels.get(serviceName).getClassDefinitions();
     }
 
-    public CtClass getStorageClass() {
+    public Storage getStorageClass() {
         return generatedHelperClasses.getStorageClass();
     }
 
-    public CtClass getOriginal(String className) {
-        return generatedClassLevels.get(className).getServiceOriginalClass();
+    public Implementation getOriginal(String className) {
+        return generatedClassLevels.get(className).getImplementation();
     }
 
-    public CtClass getServiceImplementation(String className) {
+    public Service getService(String className) {
         return generatedClassLevels.get(className).getGeneratedClientService().getService();
     }
 
-    public CtClass getMain(String serviceName) {
+    public MicroserviceMain getMain(String serviceName) {
         return generatedServiceLevels.get(serviceName).getMain();
     }
 
-    public Collection<CtInterface> getInterfaces() {
+    public Collection<ServiceInterface> getInterfaces() {
         return generatedClassLevels.values().stream()
                 .map(generatedClassLevel -> generatedClassLevel.getGeneratedClientService().getInterface())
                 .collect(Collectors.toList());
@@ -125,5 +81,34 @@ public class GeneratedData {
 
     public GeneratedHelperClasses getHelpers() {
         return generatedHelperClasses;
+    }
+
+    public List<Proxy> getProxies() {
+        return generatedClassLevels.values().stream()
+                .map(GeneratedClassLevel::getProxy)
+                .collect(Collectors.toList());
+    }
+
+    public List<Writable> getWritables() {
+        List<Writable> writables = new ArrayList<>();
+
+        writables.addAll(generatedHelperClasses.getAllWritables());
+
+        writables.add(generatedMainServiceLevel.getMainServicePom());
+        writables.add(generatedMainServiceLevel.getClassDefinitions());
+
+        writables.add(generatedInterfaceServiceLevel.getServiceInterfacePom());
+
+        for (GeneratedServiceLevel serviceLevel : generatedServiceLevels.values()) {
+            writables.addAll(serviceLevel.getAllWritables());
+        }
+
+        for (GeneratedClassLevel classLevel : generatedClassLevels.values()) {
+            writables.addAll(classLevel.getAllWritables());
+        }
+
+        writables.addAll(unimplementedTypeMap.values());
+
+        return writables;
     }
 }

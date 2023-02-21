@@ -2,45 +2,52 @@ package cullinan.helpers.decomposition.generators;
 
 import cullinan.helpers.decomposition.generators.model.GeneratedData;
 import cullinan.helpers.decomposition.generators.model.GeneratedServiceLevel;
-import cullinan.helpers.decomposition.javagenerators.ServiceMainCreator;
-import cullinan.helpers.decomposition.javagenerators.ClassDefinitionsCreator;
+import cullinan.helpers.decomposition.writers.WriteDefinition;
+import generatedfiles.*;
 import input.Microservice;
-import spoon.reflect.declaration.CtClass;
+import org.w3c.dom.Document;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class ServiceLevelGenerator {
     private final GeneratedData generatedData;
+    private final Document originalPom;
     private GeneratedServiceLevel generatedServiceLevel;
 
-    public ServiceLevelGenerator(GeneratedData generatedData) {
+    public ServiceLevelGenerator(GeneratedData generatedData, Document originalPom) {
         this.generatedData = generatedData;
-    }
-
-    public GeneratedServiceLevel generateMainService() {
-        generatedServiceLevel = new GeneratedServiceLevel("main");
-        generatedServiceLevel = generateMainServiceClassDefinitions(generatedData);
-        return generatedServiceLevel;
+        this.originalPom = originalPom;
     }
 
     public GeneratedServiceLevel generateMicroservice(Microservice microservice) {
         generatedServiceLevel = new GeneratedServiceLevel(microservice.getName());
-        generatedServiceLevel = generateMain(generatedData, microservice);
+        generatedServiceLevel = generatePom(microservice, originalPom);
+        generatedServiceLevel = generateMicroserviceMain(generatedData, microservice);
         generatedServiceLevel = generateMicroserviceClassDefinitions(generatedData, microservice);
         return generatedServiceLevel;
     }
 
-    private GeneratedServiceLevel generateMain(GeneratedData generatedData, Microservice microservice) {
-        List<CtClass> services = new ArrayList<>();
+    private GeneratedServiceLevel generateMicroserviceMain(GeneratedData generatedData, Microservice microservice) {
+        List<Service> services = new ArrayList<>();
         for (String serviceClassName : microservice.getIdentifiedClasses()) {
-            CtClass serviceImplementation = generatedData.getServiceImplementation(serviceClassName);
-//            GeneratedClassLevel generatedClassLevel = generatedData.getGeneratedClassLevel(serviceClassName);
-//            services.add(generatedClassLevel.getGeneratedClientService().getService());
-            services.add(serviceImplementation);
+            Service service = generatedData.getService(serviceClassName);
+            services.add(service);
         }
-        CtClass main = ServiceMainCreator.createMain(services);
+        MicroserviceMain main = new MicroserviceMain(services);
         generatedServiceLevel.addServiceMain(main); // TODO Main needs to know about all the services that are generated
+        return generatedServiceLevel;
+    }
+
+    // TODO Pom also needs generated for MAIN? Maybe do main first
+    private GeneratedServiceLevel generatePom(Microservice microservice, Document originalPom) {
+        List<Service> services = new ArrayList<>();
+//        for (String serviceClassName : microservice.getIdentifiedClasses()) {
+//            Service service = generatedData.getService(serviceClassName);
+//            services.add(service);
+//        }
+        MicroservicePom pom = new MicroservicePom(originalPom, microservice.getName());
+        generatedServiceLevel.addServicePom(pom); // TODO Main needs to know about all the services that are generated
         return generatedServiceLevel;
     }
 
@@ -50,24 +57,10 @@ public class ServiceLevelGenerator {
     // TODO Generate Poms
     // TODO Generate classefinitions
 
-    private GeneratedServiceLevel generateMainServiceClassDefinitions(GeneratedData generatedData) {
-        List<CtClass> proxies = generatedData.getProxies();
 
-        List<String> classesInService = new ArrayList<>();
-        List<String> proxyDefinitions = new ArrayList<>();
-
-        for (CtClass proxy : proxies) {
-            proxyDefinitions.add(proxy.getQualifiedName());
-        }
-
-        CtClass classDefinitions = new ClassDefinitionsCreator(classesInService, proxyDefinitions).build();
-
-        generatedServiceLevel.addClassDefinitions(classDefinitions);
-        return generatedServiceLevel;
-    }
 
     private GeneratedServiceLevel generateMicroserviceClassDefinitions(GeneratedData generatedData, Microservice microservice) {
-        List<CtClass> proxies = generatedData.getProxies();
+        List<Proxy> proxies = generatedData.getProxies();
         // For every class, decide if the class is in the microservice.
         // If it is, we want to add it the service class definitions
         // If not, we want to add it to the proxy definitions.
@@ -75,8 +68,8 @@ public class ServiceLevelGenerator {
         List<String> classesInService = microservice.getIdentifiedClasses();
         List<String> proxyDefinitions = new ArrayList<>();
 
-        for (CtClass proxy : proxies) {
-            String currentClassName = proxy.getQualifiedName();
+        for (Proxy proxy : proxies) {
+            String currentClassName = proxy.getJava().getQualifiedName();
 //            CtType classType = generatedClassLevel.getServiceOriginalClass().getReference().getTypeDeclaration();
 
             // TODO Data is not in GeneratedData? Unless we put monolith in as well?
@@ -97,7 +90,7 @@ public class ServiceLevelGenerator {
 //                .map(GeneratedClassLevel::getProxy)
 //                .toList();
 
-        CtClass classDefinitions = new ClassDefinitionsCreator(classesInService, proxyDefinitions).build();
+        ClassDefinitions classDefinitions = new ClassDefinitions(WriteDefinition.THIS_MICROSERVICE, classesInService, proxyDefinitions);
 
         generatedServiceLevel.addClassDefinitions(classDefinitions);
         return generatedServiceLevel;
