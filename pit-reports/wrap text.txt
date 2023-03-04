@@ -1,0 +1,460 @@
+\\wsl.localhost\Ubuntu\home\jelmer\projects
+\\wsl.localhost\Ubuntu\home\jelmer\projects\Cullinan\pit-reports
+
+query https://github.com/search?p=30&q=NOT+library+NOT+framework+NOT+android+NOT+distributed+NOT+client+stars%3A%3E500+language%3AJava&type=Repositories
+
+awk -F 'testClass=|,' '/testClass=/ {print $2}' text.txt | sort -u
+awk '{ print "\t<param>"$0"</param>" }' text.txt
+
+awk -F 'testClass=|,' '/testClass=/ {print "\t<param>"$2"</param>"}' text.txt | sort -u
+
+      <plugin>
+        <groupId>org.pitest</groupId>
+        <artifactId>pitest-maven</artifactId>
+        <version>1.11.0</version>
+	        <dependencies>
+          <dependency>
+            <groupId>org.pitest</groupId>
+            <artifactId>pitest-junit5-plugin</artifactId>
+            <version>1.1.1</version>
+          </dependency>
+        </dependencies>
+        <configuration>
+          <verbose>
+            true
+          </verbose>
+          <argLine>
+            --illegal-access=warn
+          </argLine>
+          <excludedTestClasses>
+            <param>org.apache.hadoop.minikdc.TestMiniKdc</param>
+          </excludedTestClasses>
+        </configuration>
+      </plugin>
+
+mvn  -DwithHistory test-compile org.pitest:pitest-maven:mutationCoverage
+
+
+
+
+file:///C:/Users/Jelme/AppData/Local/Packages/CanonicalGroupLimited.Ubuntu_79rhkp1fndgsc/LocalState/rootfs/home/jelmer/projects/maven/maven-core/target/pit-reports/index.html
+bad score
+
+jenkins-2.391
+Fails
+[ERROR] Failed to execute goal org.pitest:pitest-maven:1.11.0:mutationCoverage (default-cli) on project cli: Execution default-cli of goal org.pitest:pitest-maven:1.11.0:mutationCoverage failed: Coverage generation minion exited abnormally! (UNKNOWN_ERROR)
+???? no clue
+
+Struts works
+https://github.com/apache/struts/tree/STRUTS_6_1_1
+file:///C:/Users/Jelme/AppData/Local/Packages/CanonicalGroupLimited.Ubuntu_79rhkp1fndgsc/LocalState/rootfs/home/jelmer/projects/struts/core/target/pit-reports/index.html
+bad score
+
+
+Drools has internal build for Pitest configuration
+mvn verify -Dmutation-coverage 
+where does this come from? What does it do? Not explained, maybe check verify docs?
+not in pom.xml?
+does not seem to run though...
+changed version 1.2.0 internal to 1.11.0
+8.34.0.Final
+
+
+Project name:
+Link:
+Version:
+Pitest details:
+Tests disabled:
+Score:
+
+
+Project name: Hadoop
+Version: rel/release-3.3.4
+Pitest details:
+Tests disabled: org.apache.hadoop.minikdc.TestMiniKdc
+Score:
+
+
+Project name: keycloak
+Link: https://github.com/keycloak/keycloak
+Version:20.0.5
+Pitest details:
+Tests disabled:
+Score:
+
+
+Project name: thingsboard
+Link: https://github.com/thingsboard/thingsboard
+Version: v3.4.4
+Pitest details: UNKNOWN ERROR...
+Tests disabled:
+Score:
+
+Project name: mybatis-3
+Link: https://github.com/mybatis/mybatis-3
+Version: mybatis-3.5.11
+Pitest details:
+Tests disabled:
+Score:
+================================================================================
+- Statistics
+================================================================================
+>> Line Coverage: 9462/10846 (87%)
+>> Generated 5205 mutations Killed 4301 (83%)
+>> Mutations with no coverage 555. Test strength 92%
+>> Ran 496 tests (0.1 tests per mutation)
+
+
+Project name: jsoup
+Link: https://github.com/jhy/jsoup/tree/jsoup-1.15.4
+Version: jsoup-1.15.4
+Pitest details:
+Tests disabled:
+Score:
+> Total  : 2 hours, 32 minutes and 39 seconds
+--------------------------------------------------------------------------------
+================================================================================
+- Statistics
+================================================================================
+>> Line Coverage: 7636/8607 (89%)
+>> Generated 5542 mutations Killed 3647 (66%)
+>> Mutations with no coverage 692. Test strength 75%
+>> Ran 12861 tests (2.32 tests per mutation)
+
+Project name: OpenRefine
+Link: https://github.com/OpenRefine/OpenRefine
+Version: 3.7.0
+Pitest details: UNKNOWN ERROR
+Tests disabled:
+Score:
+
+Project name: Shopizer
+Link: https://github.com/shopizer-ecommerce/shopizer
+Version: v3.2.5
+Pitest details: 
+Tests disabled:
+						<param>com.salesmanager.test.shop.integration.customer.CustomerRegistrationIntegrationTest</param>
+						<param>com.salesmanager.test.shop.integration.product.ProductManagementAPIIntegrationTest</param>
+						<param>com.salesmanager.test.shop.integration.product.ProductV2ManagementAPIIntegrationTest</param>
+						<param>com.salesmanager.test.shop.integration.store.MerchantStoreApiIntegrationTest</param>
+						<param>com.salesmanager.test.shop.integration.system.ActuatorTest</param>
+						<param>com.salesmanager.test.shop.integration.system.OptinApiIntegrationTest</param>
+						<param>com.salesmanager.test.shop.integration.tax.TaxRateIntegrationTest</param>
+						<param>com.salesmanager.test.shop.integration.user.UserApiIntegrationTest</param>
+						<param>com.salesmanager.test.shop.util.GeneratePasswordTest</param>
+						<param>com.salesmanager.test.shop.integration.category.CategoryManagementAPIIntegrationTest</param>
+						<param>com.salesmanager.test.shop.integration.cart.ShoppingCartAPIIntegrationTest</param>
+						<param>com.salesmanager.test.catalog.ManufacturerTest</param>
+						<param>com.salesmanager.test.catalog.ProductNextGenTest</param>
+						<param>com.salesmanager.test.catalog.ProductTest</param>
+						<param>com.salesmanager.test.modules.ModulesTest</param>
+						<param>com.salesmanager.test.shoppingcart.ShoppingCartTest</param>
+com.salesmanager.test.catalog.CategoryTest
+Score:
+
+
+Project name: MusicBot
+Link: https://github.com/jagrosh/MusicBot
+Version: 0.3.8
+Pitest details: UNKNOWN ERROR
+Tests disabled:
+Score:
+
+Project name: Flyway
+Link: https://github.com/flyway/flyway
+Version: flyway-9.15.0
+Pitest details:  lol no tests
+Tests disabled:
+Score:
+
+
+Project name: dddsample-core
+Link: https://github.com/citerus/dddsample-core
+Version: 771f794 commit (there have been  updates, few releases)
+Pitest details:  
+Tests disabled:
+Score: GOOD SCORE
+
+Project name: commons-lang
+Link: https://github.com/apache/commons-lang
+Version: rel/commons-lang-3.12.0
+Pitest details:  
+Tests disabled:
+Score:
+--------------------------------------------------------------------------------
+> Total  : 1 hours, 39 minutes and 38 seconds
+--------------------------------------------------------------------------------
+================================================================================
+- Statistics
+================================================================================
+>> Line Coverage: 15117/15995 (95%)
+>> Generated 13247 mutations Killed 11260 (85%)
+>> Mutations with no coverage 528. Test strength 89%
+>> Ran 61791 tests (4.66 tests per mutation)
+
+
+Project name: commons-text
+Link: https://github.com/apache/commons-text
+Version: rel/commons-text-1.10.0
+Pitest details:  
+Tests disabled:
+Score:
+> Total  : 37 minutes and 8 seconds
+--------------------------------------------------------------------------------
+================================================================================
+- Statistics
+================================================================================
+>> Line Coverage: 5734/5817 (99%)
+>> Generated 4470 mutations Killed 3763 (84%)
+>> Mutations with no coverage 65. Test strength 85%
+>> Ran 15719 tests (3.52 tests per mutation)
+
+Project name: commons-collections
+Link: https://github.com/apache/commons-collections
+Version: commons-commons-collections-4.4
+Pitest details:  
+Tests disabled:
+Score:
+> Total  : 1 hours, 1 minutes and 2 seconds
+--------------------------------------------------------------------------------
+================================================================================
+- Statistics
+================================================================================
+>> Line Coverage: 6376/13256 (48%)
+>> Generated 8445 mutations Killed 3496 (41%)
+>> Mutations with no coverage 4348. Test strength 85%
+>> Ran 52269 tests (6.19 tests per mutation)
+
+Description [testClass=org.apache.maven.DefaultMavenTest, name=testEnsureResolverSessionHasMavenWorkspaceReader(org.apache.maven.DefaultMavenTest)]
+Description [testClass=org.apache.maven.DefaultMavenTest, name=testMavenProjectEditArtifacts(org.apache.maven.DefaultMavenTest)]
+Description [testClass=org.apache.maven.DefaultMavenTest, name=testMavenProjectNoDuplicateArtifacts(org.apache.maven.DefaultMavenTest)]
+Description [testClass=org.apache.maven.DefaultMavenTest, name=testThatErrorDuringProjectDependencyGraphCreationAreStored(org.apache.maven.DefaultMavenTest)]
+Description [testClass=org.apache.maven.MavenLifecycleParticipantTest, name=testDependencyInjection(org.apache.maven.MavenLifecycleParticipantTest)]
+Description [testClass=org.apache.maven.MavenLifecycleParticipantTest, name=testReactorDependencyInjection(org.apache.maven.MavenLifecycleParticipantTest)]
+Description [testClass=org.apache.maven.MavenTest, name=testLifecycleExecutionUsingADefaultLifecyclePhase(org.apache.maven.MavenTest)]
+Description [testClass=org.apache.maven.ProjectDependenciesResolverTest, name=testSystemScopeDependencies(org.apache.maven.ProjectDependenciesResolverTest)]
+Description [testClass=org.apache.maven.ProjectDependenciesResolverTest, name=testSystemScopeDependencyIsPresentInTheCompileClasspathElements(org.apache.maven.ProjectDependenciesResolverTest)]
+Description [testClass=org.apache.maven.lifecycle.LifecycleExecutorSubModulesTest, name=testCreation(org.apache.maven.lifecycle.LifecycleExecutorSubModulesTest)]
+Description [testClass=org.apache.maven.lifecycle.LifecycleExecutorTest, name=testCalculationOfBuildPlanTasksOfTheCleanLifecycleAndTheInstallLifecycle(org.apache.maven.lifecycle.LifecycleExecutorTest)]
+Description [testClass=org.apache.maven.lifecycle.LifecycleExecutorTest, name=testCalculationOfBuildPlanWithIndividualTaskOfTheCleanCleanGoal(org.apache.maven.lifecycle.LifecycleExecutorTest)]
+Description [testClass=org.apache.maven.lifecycle.LifecycleExecutorTest, name=testCalculationOfBuildPlanWithIndividualTaskOfTheCleanLifecycle(org.apache.maven.lifecycle.LifecycleExecutorTest)]
+Description [testClass=org.apache.maven.lifecycle.LifecycleExecutorTest, name=testCalculationOfBuildPlanWithIndividualTaskWherePluginIsSpecifiedInThePom(org.apache.maven.lifecycle.LifecycleExecutorTest)]
+Description [testClass=org.apache.maven.lifecycle.LifecycleExecutorTest, name=testCalculationOfBuildPlanWithMultipleExecutionsOfModello(org.apache.maven.lifecycle.LifecycleExecutorTest)]
+Description [testClass=org.apache.maven.lifecycle.LifecycleExecutorTest, name=testExecutionListeners(org.apache.maven.lifecycle.LifecycleExecutorTest)]
+Description [testClass=org.apache.maven.lifecycle.LifecycleExecutorTest, name=testFindingPluginPrefixforCleanClean(org.apache.maven.lifecycle.LifecycleExecutorTest)]
+Description [testClass=org.apache.maven.lifecycle.LifecycleExecutorTest, name=testInvalidGoalName(org.apache.maven.lifecycle.LifecycleExecutorTest)]
+Description [testClass=org.apache.maven.lifecycle.LifecycleExecutorTest, name=testLifecyclePluginsRetrievalForDefaultLifecycle(org.apache.maven.lifecycle.LifecycleExecutorTest)]
+Description [testClass=org.apache.maven.lifecycle.LifecycleExecutorTest, name=testLifecycleQueryingUsingADefaultLifecyclePhase(org.apache.maven.lifecycle.LifecycleExecutorTest)]
+Description [testClass=org.apache.maven.lifecycle.LifecycleExecutorTest, name=testPluginConfigurationCreation(org.apache.maven.lifecycle.LifecycleExecutorTest)]
+Description [testClass=org.apache.maven.lifecycle.LifecycleExecutorTest, name=testPluginPrefixRetrieval(org.apache.maven.lifecycle.LifecycleExecutorTest)]
+Description [testClass=org.apache.maven.lifecycle.LifecycleExecutorTest, name=testSetupMojoExecution(org.apache.maven.lifecycle.LifecycleExecutorTest)]
+Description [testClass=org.apache.maven.lifecycle.internal.LifecycleDependencyResolverTest, name=testCachedReactorProjectDependencies(org.apache.maven.lifecycle.internal.LifecycleDependencyResolverTest)]
+Description [testClass=org.apache.maven.lifecycle.internal.LifecycleExecutionPlanCalculatorTest, name=testCalculateExecutionPlanWithGoalTasks(org.apache.maven.lifecycle.internal.LifecycleExecutionPlanCalculatorTest)]
+Description [testClass=org.apache.maven.plugin.PluginManagerTest, name=testAggregatorMojo(org.apache.maven.plugin.PluginManagerTest)]
+Description [testClass=org.apache.maven.plugin.PluginManagerTest, name=testBuildExtensionsPluginLoading(org.apache.maven.plugin.PluginManagerTest)]
+Description [testClass=org.apache.maven.plugin.PluginManagerTest, name=testMojoConfigurationIsMergedCorrectly(org.apache.maven.plugin.PluginManagerTest)]
+Description [testClass=org.apache.maven.plugin.PluginManagerTest, name=testMojoDescriptorRetrieval(org.apache.maven.plugin.PluginManagerTest)]
+Description [testClass=org.apache.maven.plugin.PluginManagerTest, name=testMojoThatIsPresentInTheCurrentBuild(org.apache.maven.plugin.PluginManagerTest)]
+Description [testClass=org.apache.maven.plugin.PluginManagerTest, name=testMojoThatRequiresExecutionToAGivenPhaseBeforeExecutingItself(org.apache.maven.plugin.PluginManagerTest)]
+Description [testClass=org.apache.maven.plugin.PluginManagerTest, name=testMojoWhereInternallyStatedDependencyIsOverriddenByProject(org.apache.maven.plugin.PluginManagerTest)]
+Description [testClass=org.apache.maven.plugin.PluginManagerTest, name=testPluginLoading(org.apache.maven.plugin.PluginManagerTest)]
+Description [testClass=org.apache.maven.plugin.PluginManagerTest, name=testPluginRealmCache(org.apache.maven.plugin.PluginManagerTest)]
+Description [testClass=org.apache.maven.plugin.PluginManagerTest, name=testRemoteResourcesPlugin(org.apache.maven.plugin.PluginManagerTest)]
+Description [testClass=org.apache.maven.plugin.PluginManagerTest, name=testSurefirePlugin(org.apache.maven.plugin.PluginManagerTest)]
+Description [testClass=org.apache.maven.plugin.PluginManagerTest, name=testThatPluginDependencyThatHasSystemScopeIsResolved(org.apache.maven.plugin.PluginManagerTest)]
+Description [testClass=org.apache.maven.plugin.PluginParameterExpressionEvaluatorTest, name=testBasedirExtractionWithMissingProject(org.apache.maven.plugin.PluginParameterExpressionEvaluatorTest)]
+Description [testClass=org.apache.maven.plugin.PluginParameterExpressionEvaluatorTest, name=testEscapedVariablePassthrough(org.apache.maven.plugin.PluginParameterExpressionEvaluatorTest)]
+Description [testClass=org.apache.maven.plugin.PluginParameterExpressionEvaluatorTest, name=testEscapedVariablePassthroughInLargerExpression(org.apache.maven.plugin.PluginParameterExpressionEvaluatorTest)]
+Description [testClass=org.apache.maven.plugin.PluginParameterExpressionEvaluatorTest, name=testLocalRepositoryExtraction(org.apache.maven.plugin.PluginParameterExpressionEvaluatorTest)]
+Description [testClass=org.apache.maven.plugin.PluginParameterExpressionEvaluatorTest, name=testMissingPOMPropertyRefInLargerExpression(org.apache.maven.plugin.PluginParameterExpressionEvaluatorTest)]
+Description [testClass=org.apache.maven.plugin.PluginParameterExpressionEvaluatorTest, name=testMultipleSubExpressionsInLargerExpression(org.apache.maven.plugin.PluginParameterExpressionEvaluatorTest)]
+Description [testClass=org.apache.maven.plugin.PluginParameterExpressionEvaluatorTest, name=testPOMPropertyExtractionWithMissingProject_WithDotNotation(org.apache.maven.plugin.PluginParameterExpressionEvaluatorTest)]
+Description [testClass=org.apache.maven.plugin.PluginParameterExpressionEvaluatorTest, name=testPluginArtifactIdExpressionReference(org.apache.maven.plugin.PluginParameterExpressionEvaluatorTest)]
+Description [testClass=org.apache.maven.plugin.PluginParameterExpressionEvaluatorTest, name=testPluginArtifactMapExpressionReference(org.apache.maven.plugin.PluginParameterExpressionEvaluatorTest)]
+Description [testClass=org.apache.maven.plugin.PluginParameterExpressionEvaluatorTest, name=testPluginArtifactsExpressionReference(org.apache.maven.plugin.PluginParameterExpressionEvaluatorTest)]
+Description [testClass=org.apache.maven.plugin.PluginParameterExpressionEvaluatorTest, name=testPluginDescriptorExpressionReference(org.apache.maven.plugin.PluginParameterExpressionEvaluatorTest)]
+Description [testClass=org.apache.maven.plugin.PluginParameterExpressionEvaluatorTest, name=testShouldExtractPluginArtifacts(org.apache.maven.plugin.PluginParameterExpressionEvaluatorTest)]
+Description [testClass=org.apache.maven.plugin.PluginParameterExpressionEvaluatorTest, name=testTwoExpressions(org.apache.maven.plugin.PluginParameterExpressionEvaluatorTest)]
+Description [testClass=org.apache.maven.plugin.PluginParameterExpressionEvaluatorTest, name=testValueExtractionFromSystemPropertiesWithMissingProject(org.apache.maven.plugin.PluginParameterExpressionEvaluatorTest)]
+Description [testClass=org.apache.maven.plugin.PluginParameterExpressionEvaluatorTest, name=testValueExtractionFromSystemPropertiesWithMissingProject_WithDotNotation(org.apache.maven.plugin.PluginParameterExpressionEvaluatorTest)]
+Description [testClass=org.apache.maven.plugin.PluginParameterExpressionEvaluatorTest, name=testValueExtractionWithAPomValueContainingAPath(org.apache.maven.plugin.PluginParameterExpressionEvaluatorTest)]
+Description [testClass=org.apache.maven.project.DefaultMavenProjectBuilderTest, name=testBuildFromMiddlePom(org.apache.maven.project.DefaultMavenProjectBuilderTest)]
+Description [testClass=org.apache.maven.project.DefaultMavenProjectBuilderTest, name=testBuildParentVersionRangeExternally(org.apache.maven.project.DefaultMavenProjectBuilderTest)]
+Description [testClass=org.apache.maven.project.DefaultMavenProjectBuilderTest, name=testBuildParentVersionRangeExternallyWithChildPomParentVersionExpression(org.apache.maven.project.DefaultMavenProjectBuilderTest)]
+Description [testClass=org.apache.maven.project.DefaultMavenProjectBuilderTest, name=testBuildParentVersionRangeExternallyWithChildPomVersionExpression(org.apache.maven.project.DefaultMavenProjectBuilderTest)]
+Description [testClass=org.apache.maven.project.DefaultMavenProjectBuilderTest, name=testBuildParentVersionRangeExternallyWithChildProjectParentVersionExpression(org.apache.maven.project.DefaultMavenProjectBuilderTest)]
+Description [testClass=org.apache.maven.project.DefaultMavenProjectBuilderTest, name=testBuildParentVersionRangeExternallyWithChildProjectVersionExpression(org.apache.maven.project.DefaultMavenProjectBuilderTest)]
+Description [testClass=org.apache.maven.project.DefaultMavenProjectBuilderTest, name=testBuildParentVersionRangeExternallyWithChildRevisionExpression(org.apache.maven.project.DefaultMavenProjectBuilderTest)]
+Description [testClass=org.apache.maven.project.DefaultMavenProjectBuilderTest, name=testBuildParentVersionRangeExternallyWithoutChildVersion(org.apache.maven.project.DefaultMavenProjectBuilderTest)]
+Description [testClass=org.apache.maven.project.DefaultMavenProjectBuilderTest, name=testBuildParentVersionRangeLocallyWithChildProjectParentVersionExpression(org.apache.maven.project.DefaultMavenProjectBuilderTest)]
+Description [testClass=org.apache.maven.project.DefaultMavenProjectBuilderTest, name=testBuildParentVersionRangeLocallyWithChildProjectVersionExpression(org.apache.maven.project.DefaultMavenProjectBuilderTest)]
+Description [testClass=org.apache.maven.project.DefaultMavenProjectBuilderTest, name=testBuildParentVersionRangeLocallyWithChildRevisionExpression(org.apache.maven.project.DefaultMavenProjectBuilderTest)]
+Description [testClass=org.apache.maven.project.DefaultMavenProjectBuilderTest, name=testBuildParentVersionRangeLocallyWithoutChildVersion(org.apache.maven.project.DefaultMavenProjectBuilderTest)]
+Description [testClass=org.apache.maven.project.DefaultMavenProjectBuilderTest, name=testBuildStubModelForMissingRemotePom(org.apache.maven.project.DefaultMavenProjectBuilderTest)]
+Description [testClass=org.apache.maven.project.DefaultMavenProjectBuilderTest, name=testBuildValidParentVersionRangeLocally(org.apache.maven.project.DefaultMavenProjectBuilderTest)]
+Description [testClass=org.apache.maven.project.DefaultMavenProjectBuilderTest, name=testDuplicatePluginDefinitionsMerged(org.apache.maven.project.DefaultMavenProjectBuilderTest)]
+Description [testClass=org.apache.maven.project.DefaultMavenProjectBuilderTest, name=testFutureModelVersion(org.apache.maven.project.DefaultMavenProjectBuilderTest)]
+Description [testClass=org.apache.maven.project.DefaultMavenProjectBuilderTest, name=testFutureSchemaModelVersion(org.apache.maven.project.DefaultMavenProjectBuilderTest)]
+Description [testClass=org.apache.maven.project.DefaultMavenProjectBuilderTest, name=testImportScopePomResolvesFromPropertyBasedRepository(org.apache.maven.project.DefaultMavenProjectBuilderTest)]
+Description [testClass=org.apache.maven.project.DefaultMavenProjectBuilderTest, name=testPartialResultUponBadDependencyDeclaration(org.apache.maven.project.DefaultMavenProjectBuilderTest)]
+Description [testClass=org.apache.maven.project.DefaultMavenProjectBuilderTest, name=testPastModelVersion(org.apache.maven.project.DefaultMavenProjectBuilderTest)]
+Description [testClass=org.apache.maven.project.MavenProjectTest, name=testAddDotFile(org.apache.maven.project.MavenProjectTest)]
+Description [testClass=org.apache.maven.project.MavenProjectTest, name=testClone(org.apache.maven.project.MavenProjectTest)]
+Description [testClass=org.apache.maven.project.MavenProjectTest, name=testCloneWithActiveProfile(org.apache.maven.project.MavenProjectTest)]
+Description [testClass=org.apache.maven.project.MavenProjectTest, name=testCloneWithBaseDir(org.apache.maven.project.MavenProjectTest)]
+Description [testClass=org.apache.maven.project.MavenProjectTest, name=testCloneWithDependencyManagement(org.apache.maven.project.MavenProjectTest)]
+Description [testClass=org.apache.maven.project.MavenProjectTest, name=testCloneWithDistributionManagement(org.apache.maven.project.MavenProjectTest)]
+Description [testClass=org.apache.maven.project.MavenProjectTest, name=testEmptyConstructor(org.apache.maven.project.MavenProjectTest)]
+Description [testClass=org.apache.maven.project.MavenProjectTest, name=testGetModulePathAdjustment(org.apache.maven.project.MavenProjectTest)]
+Description [testClass=org.apache.maven.project.MavenProjectTest, name=testIdentityProtoInheritance(org.apache.maven.project.MavenProjectTest)]
+Description [testClass=org.apache.maven.project.MavenProjectTest, name=testShouldInterpretChildPathAdjustmentBasedOnModulePaths(org.apache.maven.project.MavenProjectTest)]
+Description [testClass=org.apache.maven.project.MavenProjectTest, name=testUndefinedOutputDirectory(org.apache.maven.project.MavenProjectTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testAppendArtifactIdOfChildToInheritedUrls(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testAppendArtifactIdOfParentAndChildToInheritedUrls(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testAppendOfInheritedPluginConfigurationWithActiveProfile(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testAppendOfInheritedPluginConfigurationWithNoProfile(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testBooleanInterpolation(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testBuildDirectoriesUsePlatformSpecificFileSeparator(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testBuildExtensionInheritance(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testCliPropsDominateProjectPropsDuringInterpolation(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testCompleteModelWithParent(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testCompleteModelWithoutParent(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testConfigWithPluginManagement(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testConsecutiveEmptyElements(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testContributorsAreInheritedButNotAggregated(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testDefaultPluginsExecutionContributedByPackagingExecuteBeforeUserDefinedExecutions(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testDependencyInheritance(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testDependencyManagementWithInterpolation(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testDependencyOrderWithPluginManagement(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testDependencyOrderWithoutPluginManagement(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testDependencyScope(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testDependencyScopeInheritance(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testDevelopersAreInheritedButNotAggregated(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testDifferentContainersWithSameId(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testDistributionManagement(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testDuplicateDependenciesCauseLastDeclarationToBePickedInLenientMode(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testDuplicateExclusionsDependency(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testEmptyScm(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testEmptyUrl(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testErroneousJoiningOfDifferentPluginsWithEqualDependencies(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testErroneousJoiningOfDifferentPluginsWithEqualExecutionIds(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testExecutionConfiguration(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testExecutionConfigurationJoin(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testExecutionConfigurationSubcollections(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testFullInterpolationOfNestedExpressions(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testInheritedPropertiesInterpolatedWithValuesFromChildWithActiveProfiles(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testInheritedPropertiesInterpolatedWithValuesFromChildWithoutProfiles(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testInterpolationOfBaseUri(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testInterpolationOfBasedirInPomWithUnusualName(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testInterpolationOfLegacyExpressionsThatDontIncludeTheProjectPrefix(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testInterpolationOfNestedBuildDirectories(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testInterpolationOfRfc3986BaseUri(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testInterpolationWithBasedirAlignedDirectories(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testInterpolationWithSystemProperty(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testInterpolationWithXmlMarkup(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testJdkActivation(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testJoiningOfContainersWhenChildHasEmptyElements(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testLicensesAreInheritedButNotAggregated(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testMailingListsAreInheritedButNotAggregated(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testManagedPluginConfigurationAppliesToImplicitPluginsIntroducedByPackaging(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testManagedProfileDependency(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testMergeOfInheritedPluginConfiguration(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testMergeOfPluginExecutionsWhenChildAndParentUseDifferentPluginVersions(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testMergeOfPluginExecutionsWhenChildInheritsPluginVersion(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testMergedFilterOrder(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testMultipleExecutionIds(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testMultipleFilters(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testMultiplePluginExecutionsWithAndWithoutIdsWithPluginManagement(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testMultiplePluginExecutionsWithAndWithoutIdsWithoutPluginManagement(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testMultipleRepositories(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testNonInheritedElementsInSubtreesOverriddenByChild(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testOrderOfGoalsFromPluginExecutionWithPluginManagement(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testOrderOfGoalsFromPluginExecutionWithoutPluginManagement(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testOrderOfMergedPluginDependenciesWithPluginManagement(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testOrderOfMergedPluginDependenciesWithoutPluginManagement(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testOrderOfMergedPluginExecutionGoalsWithPluginManagement(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testOrderOfMergedPluginExecutionGoalsWithoutPluginManagement(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testOrderOfMergedPluginExecutionsWithPluginManagement(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testOrderOfMergedPluginExecutionsWithoutPluginManagement(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testOrderOfPluginConfigurationElementsWithPluginManagement(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testOrderOfPluginConfigurationElementsWithoutPluginManagement(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testOrderOfPluginExecutionConfigurationElementsWithPluginManagement(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testOrderOfPluginExecutionConfigurationElementsWithoutPluginManagement(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testOrderOfPluginExecutionsWithPluginManagement(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testOrderOfPluginExecutionsWithoutPluginManagement(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testOverridingOfInheritedPluginExecutionsWithPluginManagement(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testOverridingOfInheritedPluginExecutionsWithoutPluginManagement(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testParentInheritance(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testParentInterpolation(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testParentPomPackagingMustBePom(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testPercentEncodedUrlsMustNotBeDecoded(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testPluginConfigProperties(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testPluginConfigurationUsingAttributesWithPluginManagement(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testPluginConfigurationUsingAttributesWithPluginManagementAndProfile(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testPluginConfigurationUsingAttributesWithoutPluginManagement(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testPluginDeclarationsRetainPomOrderAfterInjectionOfDefaultPlugins(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testPluginExecutionInheritanceWhenChildDoesDeclarePluginAsWell(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testPluginExecutionInheritanceWhenChildDoesNotDeclarePlugin(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testPluginInheritanceOrder(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testPluginInheritanceSimple(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testPluginManagementDependencies(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testPluginManagementDuplicate(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testPluginManagementInheritance(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testPluginManagementInherited(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testPluginOrder(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testPluginOrderAfterMergingWithInheritedPlugins(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testPluginOrderAfterMergingWithInjectedPlugins(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testPomEncoding(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testPomInheritance(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testPrerequisitesAreNotInherited(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testProfileDefaultActivation(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testProfileDependenciesMultipleProfiles(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testProfileInjectedDependencies(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testProfileInjectionOrder(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testProfileModuleInheritance(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testProfileModules(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testProfilePluginMngDependencies(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testProfilePlugins(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testProfilePropertiesInterpolation(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testProjectArtifactIdIsNotInheritedButMandatory(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testPropertiesInheritance(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testPropertiesNoDuplication(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testRepoInheritance(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testReportingInterpolation(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testReportingPluginConfig(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testSingleConfigurationInheritance(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testThatExecutionsWithoutIdsAreMergedAndTheChildWins(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testUncPath(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testUrlAppendWithChildPathAdjustment(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testValidationErrorUponNonUniqueArtifactRepositoryId(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testValidationErrorUponNonUniqueArtifactRepositoryIdInProfile(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testValidationErrorUponNonUniquePluginRepositoryId(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testValidationErrorUponNonUniquePluginRepositoryIdInProfile(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testXmlTextCoalescing(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.PomConstructionTest, name=testXmlWhitespaceHandling(org.apache.maven.project.PomConstructionTest)]
+Description [testClass=org.apache.maven.project.ProjectBuilderTest, name=testBuildFromModelSource(org.apache.maven.project.ProjectBuilderTest)]
+Description [testClass=org.apache.maven.project.ProjectBuilderTest, name=testBuildProperties(org.apache.maven.project.ProjectBuilderTest)]
+Description [testClass=org.apache.maven.project.ProjectBuilderTest, name=testDontResolveDependencies(org.apache.maven.project.ProjectBuilderTest)]
+Description [testClass=org.apache.maven.project.ProjectBuilderTest, name=testLocationTrackingResolution(org.apache.maven.project.ProjectBuilderTest)]
+Description [testClass=org.apache.maven.project.ProjectBuilderTest, name=testPropertyInPluginManagementGroupId(org.apache.maven.project.ProjectBuilderTest)]
+Description [testClass=org.apache.maven.project.ProjectBuilderTest, name=testReadErroneousMavenProjectContainsReference(org.apache.maven.project.ProjectBuilderTest)]
+Description [testClass=org.apache.maven.project.ProjectBuilderTest, name=testReadInvalidPom(org.apache.maven.project.ProjectBuilderTest)]
+Description [testClass=org.apache.maven.project.ProjectBuilderTest, name=testReadModifiedPoms(org.apache.maven.project.ProjectBuilderTest)]
+Description [testClass=org.apache.maven.project.ProjectBuilderTest, name=testReadParentAndChildWithRegularVersionSetParentFile(org.apache.maven.project.ProjectBuilderTest)]
+Description [testClass=org.apache.maven.project.ProjectBuilderTest, name=testResolveDependencies(org.apache.maven.project.ProjectBuilderTest)]
+Description [testClass=org.apache.maven.project.ProjectBuilderTest, name=testSystemScopeDependencyIsPresentInTheCompileClasspathElements(org.apache.maven.project.ProjectBuilderTest)]
+Description [testClass=org.apache.maven.project.ProjectBuilderTest, name=testVersionlessManagedDependency(org.apache.maven.project.ProjectBuilderTest)]
+Description [testClass=org.apache.maven.project.ProjectModelResolverTest, name=testResolveDependencySuccessfullyResolvesExistingDependencyUsingHighestVersion(org.apache.maven.project.ProjectModelResolverTest)]
+Description [testClass=org.apache.maven.project.ProjectModelResolverTest, name=testResolveDependencySuccessfullyResolvesExistingDependencyWithoutRange(org.apache.maven.project.ProjectModelResolverTest)]
+Description [testClass=org.apache.maven.project.ProjectModelResolverTest, name=testResolveDependencyThrowsUnresolvableModelExceptionWhenNoMatchingVersionFound(org.apache.maven.project.ProjectModelResolverTest)]
+Description [testClass=org.apache.maven.project.ProjectModelResolverTest, name=testResolveDependencyThrowsUnresolvableModelExceptionWhenNotFound(org.apache.maven.project.ProjectModelResolverTest)]
+Description [testClass=org.apache.maven.project.ProjectModelResolverTest, name=testResolveDependencyThrowsUnresolvableModelExceptionWhenUsingRangesWithoutUpperBound(org.apache.maven.project.ProjectModelResolverTest)]
+Description [testClass=org.apache.maven.project.ProjectModelResolverTest, name=testResolveParentSuccessfullyResolvesExistingParentUsingHighestVersion(org.apache.maven.project.ProjectModelResolverTest)]
+Description [testClass=org.apache.maven.project.ProjectModelResolverTest, name=testResolveParentSuccessfullyResolvesExistingParentWithoutRange(org.apache.maven.project.ProjectModelResolverTest)]
+Description [testClass=org.apache.maven.project.ProjectModelResolverTest, name=testResolveParentThrowsUnresolvableModelExceptionWhenNoMatchingVersionFound(org.apache.maven.project.ProjectModelResolverTest)]
+Description [testClass=org.apache.maven.project.ProjectModelResolverTest, name=testResolveParentThrowsUnresolvableModelExceptionWhenNotFound(org.apache.maven.project.ProjectModelResolverTest)]
+Description [testClass=org.apache.maven.project.ProjectModelResolverTest, name=testResolveParentThrowsUnresolvableModelExceptionWhenUsingRangesWithoutUpperBound(org.apache.maven.project.ProjectModelResolverTest)]
+Description [testClass=org.apache.maven.project.canonical.CanonicalProjectBuilderTest, name=testProjectBuilder(org.apache.maven.project.canonical.CanonicalProjectBuilderTest)]
+Description [testClass=org.apache.maven.settings.PomConstructionWithSettingsTest, name=testPomAndSettingsInterpolation(org.apache.maven.settings.PomConstructionWithSettingsTest)]
+Description [testClass=org.apache.maven.settings.PomConstructionWithSettingsTest, name=testRepositories(org.apache.maven.settings.PomConstructionWithSettingsTest)]
+Description [testClass=org.apache.maven.settings.PomConstructionWithSettingsTest, name=testSettingsNoPom(org.apache.maven.settings.PomConstructionWithSettingsTest)]
