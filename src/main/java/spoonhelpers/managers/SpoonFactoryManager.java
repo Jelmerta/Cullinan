@@ -52,13 +52,14 @@ public class SpoonFactoryManager {
     private static void setupEnvironment(Factory factory) {
         Environment environment = factory.getEnvironment();
 
-        environment.setAutoImports(false); // False seems to help with static .* imports? SampleVoyages now import import se.citerus.dddsample.domain.model.location.SampleLocations;, otherwise wrong import
+//        environment.setAutoImports(false); // False seems to help with static .* imports? SampleVoyages now import import se.citerus.dddsample.domain.model.location.SampleLocations;, otherwise wrong import
 //        environment.setAutoImports(true);
 //        environment.setComplianceLevel(8);
 //        environment.setShouldCompile(true); // TODO What does this do? I would like it to compile...
 //        environment.
 //        environment.setCopyResources(true); //???
         environment.setNoClasspath(true); // ?
+//        environment.setInputClassLoader();
         environment.setCommentEnabled(true); // Required?
     }
 }

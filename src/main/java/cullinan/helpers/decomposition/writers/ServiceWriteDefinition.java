@@ -21,15 +21,19 @@ public class ServiceWriteDefinition {
     }
 
     public boolean shouldWrite(ServiceDefinition serviceDefinition) {
-        if (serviceDefinition.getServiceType().equals(ServiceType.MAIN_SERVICE)) {
+        if (serviceDefinition.getServiceType().equals(ModuleType.PARENT)) {
+            return writeDefinitions.contains(WriteDefinition.PARENT);
+        }
+
+        if (serviceDefinition.getServiceType().equals(ModuleType.MAIN)) {
             return writeDefinitions.contains(WriteDefinition.MAIN_SERVICE);
         }
 
-        if (serviceDefinition.getServiceType().equals(ServiceType.INTERFACE_MODULE)) {
+        if (serviceDefinition.getServiceType().equals(ModuleType.INTERFACE)) {
             return writeDefinitions.contains(WriteDefinition.INTERFACE_MODULE);
         }
 
-        if (serviceDefinition.getServiceType().equals(ServiceType.MICROSERVICE)) {
+        if (serviceDefinition.getServiceType().equals(ModuleType.MICROSERVICE)) {
             if (serviceOrigin == null) {
                 return writeDefinitions.contains(WriteDefinition.THIS_MICROSERVICE) || writeDefinitions.contains(WriteDefinition.OTHER_MICROSERVICES);
             }

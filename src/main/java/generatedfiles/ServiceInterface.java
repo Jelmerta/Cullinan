@@ -2,7 +2,7 @@ package generatedfiles;
 
 import cullinan.helpers.decomposition.javagenerators.ServiceInterfaceCreator;
 import cullinan.helpers.decomposition.writers.DataWriter;
-import writers.InterfaceWriter;
+import cullinan.helpers.decomposition.writers.InterfaceWriter;
 import spoon.reflect.declaration.CtInterface;
 
 public class ServiceInterface implements Writable {

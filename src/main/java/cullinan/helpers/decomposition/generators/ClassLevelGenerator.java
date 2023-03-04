@@ -23,12 +23,13 @@ public class ClassLevelGenerator {
         ReferenceInterface referenceInterface = helpers.getReferenceInterface();
         Storage storage = helpers.getStorageClass(); // TODO Should require reference interface and set id
         SerializationUtil serializationUtil = helpers.getSerializationUtil();
+        ReferenceId referenceId = helpers.getReferenceId();
 
         Implementation serviceOriginalClass = new Implementation(originalJava, referenceInterface);
         ServiceInterface serviceInterface = new ServiceInterface(originalJava);
         Client client = new Client(originalJava, serviceInterface, serializationUtil);
         Service service = new Service(originalJava, serviceInterface, storage, serializationUtil, serviceOriginalClass); // TODO Should only need original class. Currently only using setId from classWithId, but id should be set in storagemanager anyway.
-        Proxy proxy = new Proxy(originalJava, referenceInterface, client, serializationUtil);
+        Proxy proxy = new Proxy(originalJava, referenceInterface, client, referenceId, serializationUtil);
 
         GeneratedClientService generatedClientService = new GeneratedClientService();
         generatedClientService.addServiceInterface(serviceInterface);

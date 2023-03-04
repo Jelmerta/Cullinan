@@ -1,4 +1,4 @@
-package writers;
+package cullinan.helpers.decomposition.writers;
 
 import cullinan.helpers.decomposition.writers.DataWriter;
 import cullinan.helpers.decomposition.writers.JavaWriter;

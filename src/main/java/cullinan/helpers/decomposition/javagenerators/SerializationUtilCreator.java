@@ -34,15 +34,6 @@ public class SerializationUtilCreator {
         CtClass serializationUtil = SpoonFactoryManager.getDefaultFactory().createClass("util.SerializationUtil");
         serializationUtil.addModifier(ModifierKind.PUBLIC);
 
-
-
-
-
-
-
-
-
-
         Set<CtMethod> methods = original.getMethods();
         for (CtMethod method : methods) {
             serializationUtil.addMethod(method);
@@ -55,8 +46,6 @@ public class SerializationUtilCreator {
 
         return serializationUtil;
     }
-
-
 
     private void createSerializationUtil() {
         serializationUtil = SpoonFactoryManager.getDefaultFactory().createClass();

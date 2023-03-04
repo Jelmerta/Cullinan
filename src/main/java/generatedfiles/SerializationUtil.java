@@ -2,7 +2,7 @@ package generatedfiles;
 
 import cullinan.helpers.decomposition.javagenerators.SerializationUtilCreator;
 import cullinan.helpers.decomposition.writers.DataWriter;
-import writers.SerializationUtilWriter;
+import cullinan.helpers.decomposition.writers.SerializationUtilWriter;
 import spoon.reflect.declaration.CtClass;
 
 public class SerializationUtil implements Writable {

@@ -2,7 +2,7 @@ package generatedfiles;
 
 import cullinan.helpers.decomposition.javagenerators.CullinanIdCreator;
 import cullinan.helpers.decomposition.writers.DataWriter;
-import writers.ReferenceIdWriter;
+import cullinan.helpers.decomposition.writers.ReferenceIdWriter;
 import spoon.reflect.declaration.CtClass;
 
 public class ReferenceId implements Writable {

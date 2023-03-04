@@ -1,7 +1,8 @@
 package cullinan.helpers.decomposition.writers;
 
-public enum ServiceType {
-    MAIN_SERVICE,
+public enum ModuleType {
+    PARENT,
+    MAIN,
     MICROSERVICE,
-    INTERFACE_MODULE
+    INTERFACE
 }

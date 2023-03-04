@@ -1,4 +1,4 @@
-package writers;
+package cullinan.helpers.decomposition.writers;
 
 import cullinan.helpers.decomposition.writers.DataWriter;
 import cullinan.helpers.decomposition.writers.JavaWriter;
@@ -22,15 +22,15 @@ public class UnimplementedTypeWriter implements DataWriter {
         this.serviceWriteDefinition = new ServiceWriteDefinition(WRITE_DEFINITIONS);
     }
 
+//     TODO Currently disabled? Maybe we don't need this now.
     @Override
     public void write(ServiceDefinition serviceDefinition) {
-        if (shouldWrite(serviceDefinition)) {
-            unimplementedType.getJava().addComment(SpoonFactoryManager.getDefaultFactory().createComment("Unimplemented", CtComment.CommentType.INLINE));
-//            System.out.println(unimplementedType.getJava());
-            javaWriter.write(serviceDefinition.getOutputPath(), unimplementedType.getJava());
-        } else {
-            throw new IllegalArgumentException("Service should not be written to"); // TODO... DO we want this
-        }
+//        if (shouldWrite(serviceDefinition)) {
+//            unimplementedType.getJava().addComment(SpoonFactoryManager.getDefaultFactory().createComment("Unimplemented", CtComment.CommentType.INLINE));
+//            javaWriter.write(serviceDefinition.getOutputPath(), unimplementedType.getJava());
+//        } else {
+//            throw new IllegalArgumentException("Service should not be written to"); // TODO... DO we want this
+//        }
     }
 
     // We have already filtered out places we do not want to write to by simply not generating the unimplemented type for the class.

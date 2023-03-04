@@ -56,7 +56,7 @@ public class ServiceCreator {
         Set<CtConstructor> constructors = originalClass.getConstructors();
         constructors.stream()
                 .filter(SpoonMethodManager::usedOutsideService)
-                .filter(SpoonMethodManager::isNonStatic)
+                .filter(SpoonMethodManager::isNonStatic) // TODO ??? does not make much sense right
                 .forEach(constructor -> buildConstructorImplementation(constructor));
 
         // TODO Copy the parameters from the interface
@@ -66,7 +66,7 @@ public class ServiceCreator {
         Set<CtMethod> methods = originalClass.getMethods();
         methods.stream()
                 .filter(SpoonMethodManager::usedOutsideService)
-                .filter(SpoonMethodManager::isNonStatic)
+//                .filter(SpoonMethodManager::isNonStatic) // TODO We should add static methods as well.
                 .forEach(method -> serviceImplementation.addMethod(buildMethodImplementation(method)));
 
         return serviceImplementation;
@@ -74,8 +74,12 @@ public class ServiceCreator {
 
     private CtMethod<?> buildMethodImplementation(CtMethod<?> method) {
         CtMethod<?> methodImpl = method.clone();
+        methodImpl.setParameters(new ArrayList<>());
         methodImpl.setModifiers(new HashSet<>());
         methodImpl.addModifier(ModifierKind.PUBLIC);
+        CtTypeReference remoteException = SpoonFactoryManager.getDefaultFactory().createCtTypeReference(RemoteException.class);
+        methodImpl.addThrownType(remoteException);
+
         if (!method.getType().isPrimitive()) {
             methodImpl.setType(SpoonFactoryManager.getDefaultFactory().createCtTypeReference(String.class));
         }
@@ -84,31 +88,39 @@ public class ServiceCreator {
         CtTypeReference overrideReference = SpoonFactoryManager.getDefaultFactory().createCtTypeReference(Override.class);
         CtAnnotation overrideAnnotation = SpoonFactoryManager.getDefaultFactory().createAnnotation(overrideReference);
 
-        CtParameter objectParam = SpoonFactoryManager.getDefaultFactory().createParameter();
-        objectParam.setType(SpoonFactoryManager.getDefaultFactory().createCtTypeReference(String.class));
-        objectParam.setSimpleName("objectReference");
-        methodImpl.setParameters(new ArrayList<>());
-        methodImpl.addParameterAt(0, objectParam);
+        CtBlock codeBlock = SpoonFactoryManager.getDefaultFactory().createBlock();
+
+        CtLocalVariable objectCall = null; // Remains null if static method, as static methods do not have an object
+
+//        Only object calls require a reference to an object.
+        if (!method.isStatic()) {
+            CtParameter objectParam = SpoonFactoryManager.getDefaultFactory().createParameter();
+            objectParam.setType(SpoonFactoryManager.getDefaultFactory().createCtTypeReference(String.class));
+            objectParam.setSimpleName("objectReference");
+            methodImpl.addParameterAt(0, objectParam);
+
+            objectCall = retrieveObjectCall(originalClass.getReference(), new ArrayList<>(), objectParam);
+            codeBlock.addStatement(objectCall);
+        }
+
+//         TODO If static we don't need to call the original method on an object, otherwise we do.
 
         // Don't add the override annotation double
         if (!methodImpl.hasAnnotation(Override.class)) {
             methodImpl.addAnnotation(overrideAnnotation);
         }
 
-        CtBlock codeBlock = SpoonFactoryManager.getDefaultFactory().createBlock();
-
         List<CtVariableRead> objectCallArguments = new ArrayList<>();
-
-        CtLocalVariable objectCall = retrieveObjectCall(originalClass.getReference(), new ArrayList<>(), objectParam);
-        codeBlock.addStatement(objectCall);
-
         // TODO DOes this create a new list?
         List<CtParameter<?>> otherParams = method.getParameters();
         for (CtParameter parameter : otherParams) {
             CtParameter implementationParameter = parameter.clone();
             CtVariableRead callArgument = SpoonFactoryManager.getDefaultFactory().createVariableRead();
 
-            if (!parameter.getType().isPrimitive() && !parameter.getType().equals(SpoonFactoryManager.getDefaultFactory().createCtTypeReference(String.class))) { // Just check class...?
+            // TODO Not sure yet with varargs what to do or how to encode...
+            // Check if parameter requires retrieval from storage + cast to object type. Then create variable and add this line. Also make sure that the function call we need to perform has the argument added
+            if ((parameter.isVarArgs() || !parameter.getType().isPrimitive()) && !parameter.getType().equals(SpoonFactoryManager.getDefaultFactory().createCtTypeReference(String.class))) { // Just check class...?
+                implementationParameter.setVarArgs(false);
                 // In this case always just "decode"?
 
                 implementationParameter.setType(SpoonFactoryManager.getDefaultFactory().createCtTypeReference(String.class));
@@ -130,7 +142,7 @@ public class ServiceCreator {
 
                 callArgument.setVariable(variable.getReference());
 
-            } else {
+            } else { // Just add the argument to function call directly, as the type is simple (primitive)
                 callArgument.setVariable(parameter.getReference());
             }
 
@@ -141,9 +153,18 @@ public class ServiceCreator {
         // Not yet seen this case, but needs to be handled. Perhaps look to IBM for examples? Client also needs to convert this back to proxy object
         // A list of object also needs to be converted to a list of its ids?
 
-        CtLocalVariable objectCallVariable = addObjectCall(method, codeBlock, objectCall, objectCallArguments);
-        codeBlock.addStatement(objectCallVariable);
+        CtStatement objectCallStatement = addObjectCall(method, codeBlock, objectCall, objectCallArguments);
+        codeBlock.addStatement(objectCallStatement);
 
+        // Void statements have no return
+        if (method.getType().equals(SpoonFactoryManager.getDefaultFactory().createCtTypeReference(void.class))) {
+            methodImpl.setBody(codeBlock);
+            return methodImpl;
+        }
+
+        // Otherwise this should be the result of the object call. Not clean code.
+        CtLocalVariable objectCallVariable = (CtLocalVariable) objectCallStatement;
+        // Create return statement
         CtVariableRead objectCallVariableRead = SpoonFactoryManager.getDefaultFactory().createVariableRead();
         objectCallVariableRead.setVariable(objectCallVariable.getReference());
 
@@ -174,8 +195,6 @@ public class ServiceCreator {
 
         methodImpl.setBody(codeBlock);
 
-        CtTypeReference remoteException = SpoonFactoryManager.getDefaultFactory().createCtTypeReference(RemoteException.class);
-        methodImpl.addThrownType(remoteException);
         return methodImpl;
     }
 
@@ -285,6 +304,7 @@ public class ServiceCreator {
         // Call new Object with params/objects
     }
 
+    // Create something like:         ResolverUtil objectReferenceObject = ((ResolverUtil) (SerializationUtil.decode(objectReference)));
     private CtLocalVariable retrieveObjectCall(CtTypeReference storageObjectType, List<CtVariableRead> objectCallArguments, CtParameter objectParameter) {
         CtVariableRead argument = SpoonFactoryManager.getDefaultFactory().createVariableRead();
         argument.setVariable(objectParameter.getReference());
@@ -316,7 +336,7 @@ public class ServiceCreator {
         serviceImplementation.addConstructor(constructor);
     }
 
-    private CtLocalVariable addObjectCall(CtMethod<?> method, CtBlock codeBlock, @Nullable CtLocalVariable calledObject, List<CtVariableRead> objectCallArguments) {
+    private CtStatement addObjectCall(CtMethod<?> method, CtBlock codeBlock, @Nullable CtLocalVariable calledObject, List<CtVariableRead> objectCallArguments) {
         // Make sure the service calls the actual class
         // 1. First find the object in the list of stored references of the class, or call the constructor if it is a new object. So we need to have access to the created storemanager here?
         // Maybe something like a ServiceCreator which keeps track of spoon objects like the interface, impl, clients etc.
@@ -324,9 +344,13 @@ public class ServiceCreator {
         CtInvocation invocation = SpoonFactoryManager.getDefaultFactory().createInvocation();
 
         // TODO Is this how this should be done? Almost no code references to how this should be done. Taken from  https://github.com/INRIA/spoon/blob/master/src/main/java/spoon/reflect/factory/CodeSpoonFactoryManager.getFactory().java
+
         if (calledObject != null) {
             CtVariableAccess referenceObjectTarget = SpoonFactoryManager.getDefaultFactory().createVariableRead(calledObject.getReference(), false);
             invocation.setTarget(referenceObjectTarget);
+        } else { // Implicit static check? Any other situations where we need to set/not set? IF STATIC STILL REQUIRES A TARGET (The class instead of object)
+            CtTypeAccess originalClassType = SpoonFactoryManager.getDefaultFactory().createTypeAccess(originalClassWithId.getReference());
+            invocation.setTarget(originalClassType);
         }
         // TODO Basiclly just the original call, why do this in such a difficult way?
         // TODO Maybe it's an idea to loop over the code once, going smaller and smaller (classes then methods then parameters) while keeping track of all the different implementations for interfaces/impl etc
@@ -336,8 +360,11 @@ public class ServiceCreator {
 
         invocation.setExecutable(method.getReference());
 
-        CtLocalVariable objectCallVariable = SpoonFactoryManager.getDefaultFactory().createLocalVariable(method.getType(), "result", invocation);
-        return objectCallVariable;
+        if (method.getType().equals(SpoonFactoryManager.getDefaultFactory().createCtTypeReference(void.class))) {
+            return invocation;
+        } else {
+            return SpoonFactoryManager.getDefaultFactory().createLocalVariable(method.getType(), "result", invocation);
+        }
 //        }
         // TODO Are we handling null? I guess returning null for a null function is still valid code?
     }

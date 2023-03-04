@@ -9,11 +9,16 @@ public class GeneratedData {
     private GeneratedHelperClasses generatedHelperClasses;
     private GeneratedMainServiceLevel generatedMainServiceLevel;
     private GeneratedInterfaceServiceLevel generatedInterfaceServiceLevel;
+    private GeneratedParentModule generatedParentModule;
     private Map<String, GeneratedServiceLevel> generatedServiceLevels = new HashMap<>();
     private Map<String, GeneratedClassLevel> generatedClassLevels = new HashMap<>();
     private Map<String, UnimplementedType> unimplementedTypeMap = new HashMap<>();
 
     public GeneratedData() {
+    }
+
+    public void addGeneratedParentModule(GeneratedParentModule generatedParentModule) {
+        this.generatedParentModule = generatedParentModule;
     }
 
     public void addGeneratedHelpers(GeneratedHelperClasses generatedHelperClasses) {
@@ -39,6 +44,10 @@ public class GeneratedData {
     public void addUnimplementedData(UnimplementedType unimplementedType) {
         this.unimplementedTypeMap.put(unimplementedType.getJava().getQualifiedName(), unimplementedType);
 
+    }
+
+    public ParentPom getParentPom() {
+        return generatedParentModule.getParentPom();
     }
 
     public SerializationUtil getSerializationUtil() {
@@ -91,6 +100,8 @@ public class GeneratedData {
 
     public List<Writable> getWritables() {
         List<Writable> writables = new ArrayList<>();
+
+        writables.add(generatedParentModule.getParentPom());
 
         writables.addAll(generatedHelperClasses.getAllWritables());
 

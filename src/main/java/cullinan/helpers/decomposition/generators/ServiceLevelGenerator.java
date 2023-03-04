@@ -34,7 +34,7 @@ public class ServiceLevelGenerator {
             Service service = generatedData.getService(serviceClassName);
             services.add(service);
         }
-        MicroserviceMain main = new MicroserviceMain(services);
+        MicroserviceMain main = new MicroserviceMain(services, microservice.getName());
         generatedServiceLevel.addServiceMain(main); // TODO Main needs to know about all the services that are generated
         return generatedServiceLevel;
     }

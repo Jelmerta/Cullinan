@@ -1,8 +1,6 @@
-package writers;
+package cullinan.helpers.decomposition.writers;
 
-import cullinan.helpers.decomposition.writers.DataWriter;
 import generatedfiles.MicroservicePom;
-import cullinan.helpers.decomposition.writers.ServiceType;
 import generatedfiles.ServiceDefinition;
 import org.w3c.dom.Document;
 
@@ -13,17 +11,24 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.List;
 
 public class MicroservicePomWriter implements DataWriter {
-    private final MicroservicePom microservicePom;
+    private static final List<WriteDefinition> WRITE_DEFINITIONS = List.of(WriteDefinition.THIS_MICROSERVICE);
 
-    public MicroservicePomWriter(MicroservicePom microservicePom) {
+    private final MicroservicePom microservicePom;
+    private final ServiceWriteDefinition serviceWriteDefinition;
+
+    public MicroservicePomWriter(MicroservicePom microservicePom, String originService) {
         this.microservicePom = microservicePom;
+        this.serviceWriteDefinition = new ServiceWriteDefinition(WRITE_DEFINITIONS, originService);
     }
 
     @Override
     public boolean shouldWrite(ServiceDefinition serviceDefinition) {
-        return serviceDefinition.getServiceType() == ServiceType.MICROSERVICE;
+//        TODO Only this microservice?
+        return serviceWriteDefinition.shouldWrite(serviceDefinition);
+//        return serviceDefinition.getServiceType() == ServiceType.MICROSERVICE;
     }
 
     // Has issues with formatting still... Text nodes have line breaks causing inconsistent formatting.

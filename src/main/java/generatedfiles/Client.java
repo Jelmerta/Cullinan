@@ -1,7 +1,7 @@
 package generatedfiles;
 
 import cullinan.helpers.decomposition.javagenerators.ClientCreator;
-import writers.ClientWriter;
+import cullinan.helpers.decomposition.writers.ClientWriter;
 import cullinan.helpers.decomposition.writers.DataWriter;
 import spoon.reflect.declaration.CtClass;
 

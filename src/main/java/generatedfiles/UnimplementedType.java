@@ -1,7 +1,7 @@
 package generatedfiles;
 
 import cullinan.helpers.decomposition.writers.DataWriter;
-import writers.UnimplementedTypeWriter;
+import cullinan.helpers.decomposition.writers.UnimplementedTypeWriter;
 import spoon.reflect.declaration.CtType;
 
 public class UnimplementedType implements Writable {

@@ -41,6 +41,8 @@ public class UnimplementedTypeGenerator {
     }
 
     private static CtType emptyMethodBodies(CtType type) {
+        System.out.println("Hmm");
+        System.out.println(type.getSimpleName());
         Set<CtMethod> allMethods = type.getAllMethods();
         for (CtMethod method : allMethods) {
             if (method.isAbstract()) {

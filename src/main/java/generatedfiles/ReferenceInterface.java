@@ -2,7 +2,7 @@ package generatedfiles;
 
 import cullinan.helpers.decomposition.javagenerators.ReferenceInterfaceCreator;
 import cullinan.helpers.decomposition.writers.DataWriter;
-import writers.ReferenceInterfaceWriter;
+import cullinan.helpers.decomposition.writers.ReferenceInterfaceWriter;
 import spoon.reflect.declaration.CtInterface;
 
 public class ReferenceInterface implements Writable {

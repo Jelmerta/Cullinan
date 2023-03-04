@@ -3,7 +3,7 @@ package generatedfiles;
 import cullinan.helpers.decomposition.javagenerators.MainPomCreator;
 import cullinan.helpers.decomposition.writers.DataWriter;
 import org.w3c.dom.Document;
-import writers.MainPomWriter;
+import cullinan.helpers.decomposition.writers.MainPomWriter;
 
 public class MainServicePom implements Writable {
     private final Document pom;

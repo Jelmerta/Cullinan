@@ -1,4 +1,4 @@
-package writers;
+package cullinan.helpers.decomposition.writers;
 
 import cullinan.helpers.decomposition.writers.DataWriter;
 import cullinan.helpers.decomposition.writers.JavaWriter;
@@ -10,14 +10,15 @@ import generatedfiles.ServiceDefinition;
 import java.util.List;
 
 public class MicroserviceMainWriter implements DataWriter {
-    private static final List<WriteDefinition> WRITE_DEFINITIONS = List.of(WriteDefinition.THIS_MICROSERVICE, WriteDefinition.OTHER_MICROSERVICES); // Just all microservices TODO
+//    private static final List<WriteDefinition> WRITE_DEFINITIONS = List.of(WriteDefinition.THIS_MICROSERVICE, WriteDefinition.OTHER_MICROSERVICES); // Just all microservices TODO
+    private static final List<WriteDefinition> WRITE_DEFINITIONS = List.of(WriteDefinition.THIS_MICROSERVICE); // Just all microservices TODO
     private static final JavaWriter javaWriter = new JavaWriter();
     private final MicroserviceMain microserviceMain;
     private final ServiceWriteDefinition serviceWriteDefinition;
 
-    public MicroserviceMainWriter(MicroserviceMain microserviceMain) {
+    public MicroserviceMainWriter(MicroserviceMain microserviceMain, String serviceOrigin) {
         this.microserviceMain = microserviceMain;
-        serviceWriteDefinition = new ServiceWriteDefinition(WRITE_DEFINITIONS);
+        serviceWriteDefinition = new ServiceWriteDefinition(WRITE_DEFINITIONS, serviceOrigin);
     }
 
     @Override

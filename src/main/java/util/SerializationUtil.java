@@ -16,6 +16,8 @@ import java.util.Base64;
 // Objects are dynamically serialized: either reference id for service class objects, or just byte64 serialized if not
 // TODO Should service classes not in this microservice (but part of other service) be send as reference id or just encoded? We should be able to decode on other side right?
 // TODO This could be a common util, where only the service class definitions are stored in the services. Encoding and decoding should be the same for all services.
+
+// TODO How do we deal with arrays? List<Location>? Location[]? Object[]?
 public class SerializationUtil {
 
     private SerializationUtil() {

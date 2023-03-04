@@ -3,7 +3,7 @@ package generatedfiles;
 import cullinan.helpers.decomposition.javagenerators.ServiceInterfacePomCreator;
 import cullinan.helpers.decomposition.writers.DataWriter;
 import org.w3c.dom.Document;
-import writers.ServiceInterfacePomWriter;
+import cullinan.helpers.decomposition.writers.ServiceInterfacePomWriter;
 
 
 //<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"

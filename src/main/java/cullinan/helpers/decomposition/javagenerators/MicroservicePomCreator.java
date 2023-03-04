@@ -12,9 +12,11 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 
 public class MicroservicePomCreator {
-    private static final String DEPENDENCY_ARTIFACT_ID = "client";
+    private static final String DEPENDENCY_ARTIFACT_ID = "serviceinterfaces";
     private static final String DEPENDENCY_VERSION = "1.0-SNAPSHOT";
     private static final String DEPENDENCY_SCOPE = "compile";
+    private static final String RELATIVE_PATH = "../pom.xml";
+
     private final Document originalPom;
     private final String microserviceName;
 
@@ -34,12 +36,6 @@ public class MicroservicePomCreator {
 
         this.originalPom = clonedDocument;
         this.microserviceName = microserviceName;
-
-        try {
-            buildMicroservicePom();
-        } catch (ParserConfigurationException | SAXException | IOException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     // TODO Add output path?
@@ -67,14 +63,66 @@ public class MicroservicePomCreator {
                 node.setTextContent(microserviceName.toLowerCase());
             }
 
-//            What do we do here again? Is this necessary?
-            if (node.getNodeName().equalsIgnoreCase("groupId")) {
-                groupId = node.getTextContent(); // TODO Normalize?
+//            Jar does not seem to resolve dependencies correctly... Not sure yet why
+//            https://stackoverflow.com/questions/1677473/maven-doesnt-recognize-sibling-modules-when-running-mvn-dependencytree
+//            TODO Do we need to add this if not available?
+            if (node.getNodeName().equalsIgnoreCase("packaging")) {
+                node.setTextContent("pom");
             }
+
+//             TODO There could be none... Maybe just first remove then add at end?
+            if (node.getNodeName().equalsIgnoreCase("parent")) {
+                project.removeChild(node);
+            }
+
+//            What do we do here again? Is this necessary?
+//            TODO Can be empty, obtained through parent... Maybe define a default... Can we find it elsewhere?
+//            if (node.getNodeName().equalsIgnoreCase("groupId")) {
+//                groupId = node.getTextContent(); // TODO Normalize?
+//            }
+            groupId = "MyMicroservicesProjects";
         }
 
+        addParent(project);
         addDependency(originalPom, groupId);
         return originalPom;
+    }
+
+//    <parent>
+//        <groupId>MyMicroservicesProjects</groupId>
+//        <artifactId>microservices</artifactId>
+//        <version>1.0-SNAPSHOT</version>
+//        <relativePath>../pom.xml</relativePath>
+//    </parent>
+    private void addParent(Node project) {
+        Node parent = originalPom.createElement("parent");
+        parent.appendChild(originalPom.createTextNode("\t"));
+
+        parent.setTextContent("\n\t\t\t");
+
+        Node groupId = originalPom.createElement("groupId");
+        groupId.setTextContent("MyMicroservicesProjects");
+        parent.appendChild(groupId);
+        parent.appendChild(originalPom.createTextNode("\n\t\t\t"));
+
+        Node artifactId = originalPom.createElement("artifactId");
+        artifactId.setTextContent("microservices");
+        parent.appendChild(artifactId);
+        parent.appendChild(originalPom.createTextNode("\n\t\t\t"));
+
+        Node version = originalPom.createElement("version");
+        version.setTextContent(DEPENDENCY_VERSION);
+        parent.appendChild(version);
+        parent.appendChild(originalPom.createTextNode("\n\t\t\t"));
+
+        Node relativePath = originalPom.createElement("relativePath");
+        relativePath.setTextContent(RELATIVE_PATH);
+        parent.appendChild(relativePath);
+        parent.appendChild(originalPom.createTextNode("\n\t\t\t"));
+
+        project.appendChild(parent);
+        project.appendChild(originalPom.createTextNode("\n\t"));
+
     }
 
     // White space is a bit hacky rn...
