@@ -30,7 +30,7 @@ public class Cullinan {
 // DDDsample
 //     private static final Path SOURCE_PATH_ROOT = Path.of("../dddsample-core-master");
     private static final Path SOURCE_PATH_ROOT = Path.of("../mybatis-3");
-    private static final Path SOURCE_PATH_JAVA = Path.of(SOURCE_PATH_ROOT + "/src/main/java");
+    public static final Path SOURCE_PATH_JAVA = Path.of(SOURCE_PATH_ROOT + "/src/main/java");
     private static final Path DEFAULT_OUTPUT_PATH = Path.of(SOURCE_PATH_ROOT + "_decomposed");
     private static final Path PARENT_MODULE_OUTPUT_PATH = DEFAULT_OUTPUT_PATH; // TODO just a rename...?
     private static final Path MAIN_SERVICE_OUTPUT_PATH = Path.of(DEFAULT_OUTPUT_PATH + "/monolith"); // TODO Original name? no Main?

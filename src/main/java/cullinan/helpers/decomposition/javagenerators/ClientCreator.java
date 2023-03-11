@@ -62,6 +62,7 @@ public class ClientCreator {
         assignServiceField();
         addClientMethods();
         addClientConstructors();
+        addVariableRetrievals();
         addInnerClassMethods();
         removeGenerics();
 
@@ -74,23 +75,17 @@ public class ClientCreator {
     private void addInnerClassMethods() {
         Set<CtType> nestedTypes = originalClass.getNestedTypes();
         for (CtType nestedType : nestedTypes) {
-            if (originalClass.getSimpleName().equalsIgnoreCase("Configuration")) {
-                System.out.println("mmconfig");
-                System.out.println(nestedType);
-            }
             if (nestedType.isClass() || nestedType.isEnum()) { // TODO Any other things we need to move?
 //                ServiceInterfaceCreator serviceInterfaceCreator = new ServiceInterfaceCreator((CtClass) nestedType);
 //                CtInterface ctInterface = serviceInterfaceCreator.buildInterface();
                 ClientCreator clientCreator = new ClientCreator((CtClass) nestedType, ctInterface, serializationUtil);
                 CtClass client = clientCreator.build();
-                if (originalClass.getSimpleName().equalsIgnoreCase("Configuration")) {
-                    System.out.println("mmconfig2");
-                    System.out.println("OK2" + nestedType.getSimpleName());
-//                    System.out.println(nestedType.getAllMethods());
-                    System.out.println(client.getAllMethods());
-                }
                 Set<CtMethod> clientAllMethods = client.getMethods(); // TODO methods vs all methods
                 for (CtMethod method : clientAllMethods) {
+                    if (method.getSimpleName().contains("retrieveVariable")) { // Hack upon hack. We make sure not to add inner class again as we already did this
+                        result.addMethod(method);
+                        continue;
+                    }
                     String newMethodName = nestedType.getSimpleName().substring(0, 1).toLowerCase() + nestedType.getSimpleName().substring(1) + "InnerClass" + method.getSimpleName().substring(0,1).toUpperCase() + method.getSimpleName().substring(1);
                     method.setSimpleName(newMethodName);
                     result.addMethod(method);
@@ -153,6 +148,81 @@ public class ClientCreator {
                 .filter(SpoonMethodManager::usedOutsideService)
                 .filter(SpoonMethodManager::isNonStatic)
                 .forEach(constructor -> addClientMethod(constructor, "new" + constructor.getType().getSimpleName(), true));
+    }
+
+    private void addVariableRetrievals() {
+        List<CtField> fields = originalClass.getFields();
+        for (CtField field : fields) {
+            if (!field.isPrivate()) {
+                createFieldInterfaceMethod(field);
+            }
+        }
+
+//
+//        Set<CtMethod> interfaceMethods = ctInterface.getMethods();
+//        List<CtMethod> variableRetrievalMethods = interfaceMethods.stream()
+//                .filter(interfaceMethod -> interfaceMethod.getSimpleName().contains("retrieveVariable"))
+//                .collect(Collectors.toList());
+//
+//        for (CtMethod variableRetrievalMethod : variableRetrievalMethods) {
+//            CtMethod clientMethod = createVariableRetrievalMethod(variableRetrievalMethod);
+//            result.addMethod(clientMethod);
+//        }
+    }
+
+    private void createFieldInterfaceMethod(CtField field) {
+        String fullVariableName = ProxyCreator.findFullMethodName(originalClass, field.getSimpleName());
+        fullVariableName = fullVariableName.substring(0, 1).toUpperCase() + fullVariableName.substring(1);
+        String retrieveVarMethodName = "retrieveVariable" + fullVariableName;
+        CtMethod variableRetrievalMethod = createVariableRetrievalMethod(retrieveVarMethodName);
+        result.addMethod(variableRetrievalMethod);
+    }
+
+    private CtMethod createVariableRetrievalMethod(String retrieveVarName) {
+        // Add client call to service
+        System.out.println(retrieveVarName);
+        System.out.println(ctInterface.getReference().getTypeDeclaration().getMethods());
+        List<CtMethod> methodsByName = ctInterface.getReference().getTypeDeclaration().getMethodsByName(retrieveVarName);
+        CtMethod interfaceMethod = methodsByName.get(0);
+        CtMethod clientMethod = interfaceMethod.clone();
+        clientMethod.setThrownTypes(Collections.emptySet());
+        clientMethod.setType(SpoonFactoryManager.getDefaultFactory().createCtTypeReference(Object.class));
+
+        CtExecutableReference interfaceMethodExecutable = interfaceMethod.getReference();
+        CtBlock<Object> body = SpoonFactoryManager.getDefaultFactory().createBlock();
+
+        CtVariableRead serviceVariable = SpoonFactoryManager.getDefaultFactory().createVariableRead();
+        CtFieldReference service = result.getField("service").getReference();
+        serviceVariable.setVariable(service);
+        CtInvocation serviceCall = SpoonFactoryManager.getDefaultFactory().createInvocation(serviceVariable, interfaceMethodExecutable);
+
+        // Add argument if available in interface to client call, otherwise not
+        List<CtParameter> parameters = clientMethod.getParameters();
+        if (!parameters.isEmpty()) {
+            CtParameter objectReferenceId = parameters.get(0);
+            CtVariableRead argument = SpoonFactoryManager.getDefaultFactory().createVariableRead();
+            argument.setVariable(objectReferenceId.getReference());
+            serviceCall.addArgument(argument);
+        }
+
+        CtMethod decodeMethod = serializationUtil.getMethod("decode", SpoonFactoryManager.getDefaultFactory().createCtTypeReference(String.class));
+        CtExecutableReference reference = decodeMethod.getReference();
+        CtInvocation decodeCall = SpoonFactoryManager.getDefaultFactory().createInvocation();
+        decodeCall.setTarget(SpoonFactoryManager.getDefaultFactory().createTypeAccess(serializationUtil.getReference()));
+        decodeCall.setExecutable(reference);
+        decodeCall.addArgument(serviceCall);
+        decodeCall.addTypeCast(SpoonFactoryManager.getDefaultFactory().createCtTypeReference(Object.class));
+
+        CtReturn ctReturn = SpoonFactoryManager.getDefaultFactory().createReturn();
+        ctReturn.setReturnedExpression(decodeCall);
+
+        body.addStatement(ctReturn);
+
+        CtTry tryBlock = wrapTryCatchRemoteException(body);
+
+        clientMethod.setBody(tryBlock);
+
+        return clientMethod;
     }
 
     // TODO (de)serialization and reference id mapping

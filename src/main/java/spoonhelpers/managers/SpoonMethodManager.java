@@ -5,6 +5,7 @@ import spoon.compiler.Environment;
 import spoon.reflect.declaration.*;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtTypeReference;
+import spoon.support.reflect.declaration.CtInterfaceImpl;
 import spoonhelpers.model.SpoonAccessModifier;
 import spoonhelpers.model.SpoonMethod;
 import spoonhelpers.model.SpoonParameter;
@@ -138,17 +139,40 @@ public class SpoonMethodManager {
 
     // TODO Does not actually check usage, only that it's possible...
     public static boolean usedOutsideService(CtMethod method) {
-        boolean publicUse = method.hasModifier(ModifierKind.PUBLIC);
-        boolean packageUse = !method.hasModifier(ModifierKind.PUBLIC) && !method.hasModifier(ModifierKind.PRIVATE) && !method.hasModifier(ModifierKind.PROTECTED);
+        if (method.getParent().getClass().equals(CtInterfaceImpl.class)) {
+            return false;
+        }
 
-        return publicUse || packageUse;
+//        Not possible to cast to private class. We do not allow private classes to be used outside service.
+//        PropertyParser.VariableTokenHandler objectReferenceObject = ((PropertyParser.VariableTokenHandler) (SerializationUtil.decode(objectReference)));
+//        CtClass parent = (CtClass) method.getParent();
+//        if (parent.isPrivate()) {
+//            return false;
+//        }
+
+//        boolean publicUse = method.hasModifier(ModifierKind.PUBLIC);
+//        boolean protectedUse = method.hasModifier(ModifierKind.PROTECTED);
+//        boolean packageUse = !method.hasModifier(ModifierKind.PUBLIC) && !method.hasModifier(ModifierKind.PRIVATE) && !method.hasModifier(ModifierKind.PROTECTED);
+//
+//        return publicUse || packageUse || protectedUse;
+        return !method.isPrivate();
     }
 
     public static boolean usedOutsideService(CtConstructor constructor) {
+        if (constructor.getParent().getClass().equals(CtInterfaceImpl.class)) {
+            return false;
+        }
+
+        CtClass parent = (CtClass) constructor.getParent();
+        if (parent.isPrivate()) {
+            return false;
+        }
+
         boolean publicUse = constructor.hasModifier(ModifierKind.PUBLIC);
+        boolean protectedUse = constructor.hasModifier(ModifierKind.PROTECTED);
         boolean packageUse = !constructor.hasModifier(ModifierKind.PUBLIC) && !constructor.hasModifier(ModifierKind.PRIVATE) && !constructor.hasModifier(ModifierKind.PROTECTED);
 
-        return publicUse || packageUse;
+        return publicUse || packageUse || protectedUse;
     }
 
 //    public static SpoonMethod findMethod(String name,) {

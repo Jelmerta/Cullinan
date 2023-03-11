@@ -16,6 +16,7 @@ import java.rmi.registry.Registry;
 import java.util.Collection;
 import java.util.Set;
 
+// TODO We can create an interface variable that contains the implementation, which is probably better
 public class ServiceMainCreator {
     private final Collection<CtClass> implementations;
 
