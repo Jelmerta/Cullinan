@@ -25,7 +25,7 @@ public class ImplementationWriter implements DataWriter {
     @Override
     public void write(ServiceDefinition serviceDefinition) {
         if (shouldWrite(serviceDefinition)) {
-            implementation.getJava().addComment(SpoonFactoryManager.getDefaultFactory().createComment("ImplementationHELLO", CtComment.CommentType.INLINE));
+            implementation.getJava().addComment(SpoonFactoryManager.getDefaultFactory().createComment("Implementation", CtComment.CommentType.INLINE));
             javaWriter.write(serviceDefinition.getOutputPath(), implementation.getJava());
         } else {
             throw new IllegalArgumentException("Service should not be written to"); // TODO... DO we want this

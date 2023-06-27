@@ -2,6 +2,7 @@ package cullinan.helpers.decomposition.generators.model;
 
 import generatedfiles.Implementation;
 import generatedfiles.Proxy;
+import generatedfiles.ServiceInterface;
 import generatedfiles.Writable;
 
 import java.util.Collection;
@@ -39,5 +40,9 @@ public class GeneratedClassLevel {
 
     public Collection<Writable> getAllWritables() {
         return List.of(implementation, generatedClientService.getInterface(), generatedClientService.getService(), generatedClientService.getClient(), proxy);
+    }
+
+    public ServiceInterface getInterface() {
+        return generatedClientService.getInterface();
     }
 }

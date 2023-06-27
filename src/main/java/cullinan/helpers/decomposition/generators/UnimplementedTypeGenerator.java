@@ -33,13 +33,15 @@ public class UnimplementedTypeGenerator {
     private UnimplementedType generate(CtType type) {
         if (type.isInterface()) {
             return new UnimplementedType(type); // Interface does not require any changes
+//        } else if (type.isClass() || type.isEnum()) {
         } else if (type.isClass() || type.isEnum()) {
-            return new UnimplementedType(emptyMethodBodies(type));
+            return new UnimplementedType(emptyMethodBodies(removeAnonymousTypes(type)));
         } else {
             throw new IllegalStateException("Unexpected type?");
         }
     }
 
+//    TODO Might need to be recursive for inner classes?
     private static CtType emptyMethodBodies(CtType type) {
         Set<CtMethod> allMethods = type.getAllMethods();
         for (CtMethod method : allMethods) {
@@ -48,6 +50,17 @@ public class UnimplementedTypeGenerator {
             }
 
             addExceptionBody(method);
+        }
+        return type;
+    }
+
+    //    Unimplemented versions do not need anonymous types.
+    private static CtType removeAnonymousTypes(CtType type) {
+        Set<CtType> nestedTypes = type.getNestedTypes();
+        for (CtType innerType : nestedTypes) {
+            if (innerType.isAnonymous()) {
+                type.removeNestedType(innerType);
+            }
         }
         return type;
     }

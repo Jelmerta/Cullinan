@@ -180,8 +180,6 @@ public class ClientCreator {
 
     private CtMethod createVariableRetrievalMethod(String retrieveVarName) {
         // Add client call to service
-        System.out.println(retrieveVarName);
-        System.out.println(ctInterface.getReference().getTypeDeclaration().getMethods());
         List<CtMethod> methodsByName = ctInterface.getReference().getTypeDeclaration().getMethodsByName(retrieveVarName);
         CtMethod interfaceMethod = methodsByName.get(0);
         CtMethod clientMethod = interfaceMethod.clone();
@@ -368,9 +366,6 @@ public class ClientCreator {
         List<CtParameter> clientParameters = clientMethod.getParameters();
         clientMethod.setParameters(Collections.emptyList());
         for (CtParameter parameter : clientParameters) {
-            System.out.println(clientMethod);
-            System.out.println(clientParameters);
-            System.out.println(parameter);
             clientMethod.addParameter(objectify(parameter));
 //            if (parameter.isVarArgs() || (!parameter.getType().equals(SpoonFactoryManager.getDefaultFactory().createCtTypeReference(String.class)))) {
 //                parameter.setType(SpoonFactoryManager.getDefaultFactory().createCtTypeReference(Object.class));

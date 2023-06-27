@@ -10,7 +10,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 public class MainPomCreator {
-    private static final String DEPENDENCY_ARTIFACT_ID = "client";
+    private static final String DEPENDENCY_ARTIFACT_ID = "serviceinterfaces";
     private static final String DEPENDENCY_VERSION = "1.0-SNAPSHOT";
     private static final String DEPENDENCY_SCOPE = "compile";
     private final Document pom;
@@ -54,7 +54,8 @@ public class MainPomCreator {
             }
         }
 
-        addInterfaceDependency(groupId);
+//        addInterfaceDependency(groupId);
+        addInterfaceDependency("MyMicroservicesProjects");
     }
 
     private void addInterfaceDependency(String dependencyGroupId) {

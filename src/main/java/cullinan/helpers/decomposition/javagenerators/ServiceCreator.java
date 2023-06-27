@@ -108,8 +108,8 @@ public class ServiceCreator {
         methodImpl.setModifiers(new HashSet<>());
         methodImpl.addModifier(ModifierKind.PUBLIC);
         String fullMethodName = ProxyCreator.findFullMethodName((CtClass) method.getParent(), methodImpl.getSimpleName());
-        System.out.println(fullMethodName);
         methodImpl.setSimpleName(fullMethodName);
+        methodImpl.setThrownTypes(new HashSet<>());
         CtTypeReference remoteException = SpoonFactoryManager.getDefaultFactory().createCtTypeReference(RemoteException.class);
         methodImpl.addThrownType(remoteException);
 
@@ -187,8 +187,9 @@ public class ServiceCreator {
         // Not yet seen this case, but needs to be handled. Perhaps look to IBM for examples? Client also needs to convert this back to proxy object
         // A list of object also needs to be converted to a list of its ids?
 
+//        addObjectCall(method, codeBlock, objectCall, objectCallArguments);
         CtStatement objectCallStatement = addObjectCall(method, codeBlock, objectCall, objectCallArguments);
-        codeBlock.addStatement(objectCallStatement);
+//        codeBlock.addStatement(objectCallStatement);
 
         // Void statements have no return
         if (method.getType().equals(SpoonFactoryManager.getDefaultFactory().createCtTypeReference(void.class))) {
@@ -235,11 +236,13 @@ public class ServiceCreator {
     // TODO Add assignment of reference id to service original class
 
     private CtMethod buildConstructorImplementation(CtConstructor constructor) {
+        String fullMethodName = ProxyCreator.findFullMethodName((CtType) constructor.getParent(), "new" + constructor.getType().getSimpleName());
         CtMethod constructorImplementation = SpoonFactoryManager.getDefaultFactory().createMethod();
         CtTypeReference returnType = SpoonFactoryManager.getDefaultFactory().createCtTypeReference(String.class);
         constructorImplementation.setType(returnType);
 //        constructorImplementation.setSimpleName("new" + constructor.getType()); // TODO This can be used when auto imports is set to on, otherwise returns fully qualified name
-        constructorImplementation.setSimpleName("new" + originalClass.getSimpleName());
+//        constructorImplementation.setSimpleName("new" + originalClass.getSimpleName());
+        constructorImplementation.setSimpleName(fullMethodName);
         constructorImplementation.addModifier(ModifierKind.PUBLIC);
 
         CtTypeReference overrideReference = SpoonFactoryManager.getDefaultFactory().createCtTypeReference(Override.class);
@@ -249,7 +252,8 @@ public class ServiceCreator {
         // Make public ?
         CtBlock codeBlock = SpoonFactoryManager.getDefaultFactory().createBlock();
         CtNewClass constructorCall = SpoonFactoryManager.getDefaultFactory().createNewClass();
-        constructorCall.setType(originalClassWithId.getReference());
+        constructorCall.setType(constructor.getType());
+//        constructorCall.setType(originalClassWithId.getReference());
         List<CtExpression> newObjectArguments = new ArrayList<>();
         List<CtParameter> parameters = constructor.getParameters();
         for (CtParameter parameter : parameters) {
@@ -285,7 +289,8 @@ public class ServiceCreator {
             }
         }
 
-        CtLocalVariable newObject = SpoonFactoryManager.getDefaultFactory().createLocalVariable(originalClassWithId.getReference(), "newObject", constructorCall.addTypeCast(originalClassWithId.getReference()));
+//        CtLocalVariable newObject = SpoonFactoryManager.getDefaultFactory().createLocalVariable(originalClassWithId.getReference(), "newObject", constructorCall.addTypeCast(originalClassWithId.getReference()));
+        CtLocalVariable newObject = SpoonFactoryManager.getDefaultFactory().createLocalVariable(constructor.getType(), "newObject", constructorCall.addTypeCast(constructor.getType()));
         codeBlock.addStatement(newObject);
 
         CtInvocation storageAddCall = SpoonFactoryManager.getDefaultFactory().createInvocation();
@@ -358,7 +363,7 @@ public class ServiceCreator {
             objectParam.setSimpleName("objectReferenceId");
             fieldRetrieval.addParameterAt(0, objectParam);
 
-            object = retrieveObjectCall(field.getType(), new ArrayList<>(), objectParam);
+            object = retrieveObjectCall(originalClass.getReference(), new ArrayList<>(), objectParam);
             block.addStatement(object);
         }
 
@@ -457,12 +462,61 @@ public class ServiceCreator {
 
         invocation.setExecutable(method.getReference());
 
+        // TODO Wrapping should be done for all return types. And we could make sure to only wrap in try block if method throws an exception. Though it might be the case that SRE's are thrown, so we could just always wrap in try catch block
         if (method.getType().equals(SpoonFactoryManager.getDefaultFactory().createCtTypeReference(void.class))) {
+            codeBlock.addStatement(wrapExceptions(invocation));
             return invocation;
         } else {
-            return SpoonFactoryManager.getDefaultFactory().createLocalVariable(method.getType(), "result", invocation);
+            CtLocalVariable result = SpoonFactoryManager.getDefaultFactory().createLocalVariable();
+//            result.setType(SpoonFactoryManager.getDefaultFactory().createCtTypeReference(Object.class));
+            result.setType(method.getType());
+            result.setSimpleName("result");
+            codeBlock.addStatement(result);
+
+            CtAssignment resultAssign = SpoonFactoryManager.getDefaultFactory().createVariableAssignment(result.getReference(), false, invocation);
+
+            codeBlock.addStatement(wrapExceptions(resultAssign));
+            
+            return result;
+
+//        method.getType(), "result", invocation)
+//            return SpoonFactoryManager.getDefaultFactory().createLocalVariable(method.getType(), "result", invocation);
         }
 //        }
         // TODO Are we handling null? I guess returning null for a null function is still valid code?
+    }
+
+    // If the original method throws an exception, we want to wrap it in a RemoteException, such that it can be handled in the client. We will therefore wrap the result as such:
+    //            Object result;
+    //            try {
+    //                result = objectReferenceObject.invoke(proxyInstance, methodInstance, argsInstance);
+    //            } catch (Throwable e) {
+    //                throw new RemoteException(e.getClass().toString(), e);
+    //            }
+    private CtTry wrapExceptions(CtStatement statement) {
+        CtTry tryBlock = SpoonFactoryManager.getDefaultFactory().createTry();
+
+        tryBlock.setBody(statement);
+
+        CtCatch aCatch = SpoonFactoryManager.getDefaultFactory().createCatch();
+        CtCatchVariable throwableCatch = SpoonFactoryManager.getDefaultFactory().createCatchVariable();
+        throwableCatch.setType(SpoonFactoryManager.getDefaultFactory().createCtTypeReference(Throwable.class));
+        throwableCatch.setSimpleName("e");
+        aCatch.setParameter(throwableCatch);
+
+        CtThrow throwRemoteException = SpoonFactoryManager.getDefaultFactory().createThrow();
+        CtNewClass newRemoteException = SpoonFactoryManager.getDefaultFactory().createNewClass();
+        newRemoteException.setType(SpoonFactoryManager.getDefaultFactory().createCtTypeReference(RemoteException.class));
+        newRemoteException.addArgument(SpoonFactoryManager.getDefaultFactory().createLiteral(""));
+        CtVariableAccess throwableRead = SpoonFactoryManager.getDefaultFactory().createVariableRead().setVariable(throwableCatch.getReference());
+        newRemoteException.addArgument(throwableRead);
+
+        throwRemoteException.setThrownExpression(newRemoteException);
+
+        aCatch.setBody(throwRemoteException);
+
+        tryBlock.addCatcher(aCatch);
+
+        return tryBlock;
     }
 }

@@ -6,6 +6,8 @@ import spoon.reflect.code.CtVariableRead;
 import spoon.reflect.declaration.*;
 import spoonhelpers.managers.SpoonFactoryManager;
 
+import java.util.Set;
+
 public class ServiceOriginalClassWithIdCreator {
     private final CtClass originalClass;
     private final CtInterface referenceInterface;
@@ -30,6 +32,16 @@ public class ServiceOriginalClassWithIdCreator {
         addGetReference();
         addSetReference(); // TODO This should be implemented both in the service and client right?
 
+        Set<CtType> nestedTypes = originalClass.getNestedTypes();
+        for (CtType nestedType : nestedTypes) {
+            if (nestedType.isClass() || nestedType.isEnum()) {
+                ServiceOriginalClassWithIdCreator serviceOriginalClassWithIdCreator = new ServiceOriginalClassWithIdCreator((CtClass) nestedType, referenceInterface);
+                CtClass build = serviceOriginalClassWithIdCreator.build();
+                result.addNestedType(build);
+                result.removeNestedType(nestedType);
+//                nestedType = build;
+            }
+        }
         // TODO Add get function for retrieval of reference ids
         // TODO How do we initialize this value? Do we need a setter?
 
@@ -70,13 +82,17 @@ public class ServiceOriginalClassWithIdCreator {
 
         CtParameter referenceIdParameter = SpoonFactoryManager.getDefaultFactory().createParameter();
         referenceIdParameter.setType(SpoonFactoryManager.getDefaultFactory().createCtTypeReference(String.class));
-        referenceIdParameter.setSimpleName("referenceId");
+        referenceIdParameter.setSimpleName("referenceIdParam");
         setReference.addParameter(referenceIdParameter);
 
-        CtField referenceId = this.result.getField("referenceId");
+//        CtField referenceId = SpoonFactoryManager.getDefaultFactory().createField();
+//        referenceId.setType(SpoonFactoryManager.getDefaultFactory().createCtTypeReference(String.class));
+//        referenceId.setSimpleName("referenceId");
+
+        CtField referenceId = result.getField("referenceId");
         CtVariableRead referenceRead = SpoonFactoryManager.getDefaultFactory().createVariableRead();
         referenceRead.setVariable(referenceIdParameter.getReference());
-        CtAssignment referenceIdAssignment = SpoonFactoryManager.getDefaultFactory().createVariableAssignment(referenceId.getReference(), false, referenceRead);
+        CtAssignment referenceIdAssignment = SpoonFactoryManager.getDefaultFactory().createVariableAssignment(referenceId.getReference(), true, referenceRead);
 
         setReference.setBody(referenceIdAssignment);
 

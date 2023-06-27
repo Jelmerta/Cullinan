@@ -83,8 +83,6 @@ public class ServiceInterfaceCreator {
             objectReference.setSimpleName("objectReferenceId");
             variableRetrieveMethod.addParameter(objectReference);
         }
-        System.out.println("METHOD");
-        System.out.println(variableRetrieveMethod.getSimpleName());
 
         result.addMethod(variableRetrieveMethod);
     }

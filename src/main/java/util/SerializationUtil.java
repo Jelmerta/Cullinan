@@ -24,8 +24,13 @@ public class SerializationUtil {
     }
 
     public static String encode(Object object) {
+        if (object == null) {
+            return null;
+        }
         String className = object.getClass().getName();
-        if (ClassDefinitions.isServiceClass(className) || ClassDefinitions.isProxyClass(className)) { // TODO I think this is correct? We should just send the reference id either way? What does mono2micro do?
+        String parentClassName = className.split("\\$")[0]; // Remove inner classes
+        // Remove anonymous
+        if (ClassDefinitions.isServiceClass(parentClassName) || ClassDefinitions.isProxyClass(parentClassName)) { // TODO I think this is correct? We should just send the reference id either way? What does mono2micro do?
             CullinanReference cullinanReference = (CullinanReference) object;
             return cullinanReference.getReferenceId(); // (className + "::") + TODO IS this required or is reference always containing this?
         } else {
@@ -54,10 +59,11 @@ public class SerializationUtil {
         // Split.length == 2 (:: is contained once)
 
         String className = split[0];
+        String parentClassName = className.split("\\$")[0]; // Remove inner classes
         String referenceId = split[1];
-        if (ClassDefinitions.isServiceClass(className)) {
+        if (ClassDefinitions.isServiceClass(parentClassName)) {
             return StorageManager.get(serialized); // TODO Only reference id or the whole type::referenceId String?
-        } else if (ClassDefinitions.isProxyClass(className)) {
+        } else if (ClassDefinitions.isProxyClass(parentClassName)) {
             // Get class
             try {
                 // TODO Constructor or static method...?

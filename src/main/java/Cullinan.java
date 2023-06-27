@@ -26,10 +26,12 @@ import java.util.Set;
 public class Cullinan {
 // DDDsample
 // private static final String DECOMPOSITION_INPUT_JSON = "../decomposition_input.json";
-    private static final String DECOMPOSITION_INPUT_JSON = "../mybatis_decomposition_input.json";
+//    private static final String DECOMPOSITION_INPUT_JSON = "../mybatis_decomposition_input.json";
+    private static final String DECOMPOSITION_INPUT_JSON = "../demo_decomposition_input.json";
 // DDDsample
 //     private static final Path SOURCE_PATH_ROOT = Path.of("../dddsample-core-master");
-    private static final Path SOURCE_PATH_ROOT = Path.of("../mybatis-3");
+//    private static final Path SOURCE_PATH_ROOT = Path.of("../mybatis-3");
+    private static final Path SOURCE_PATH_ROOT = Path.of("../cullinan_demo");
     public static final Path SOURCE_PATH_JAVA = Path.of(SOURCE_PATH_ROOT + "/src/main/java");
     private static final Path DEFAULT_OUTPUT_PATH = Path.of(SOURCE_PATH_ROOT + "_decomposed");
     private static final Path PARENT_MODULE_OUTPUT_PATH = DEFAULT_OUTPUT_PATH; // TODO just a rename...?
@@ -118,7 +120,7 @@ public class Cullinan {
             if (serviceDefinition.getServiceType().equals(ModuleType.MICROSERVICE)) {
                 DirectoryCopier.copyFolder(SOURCE_PATH_ROOT, serviceDefinition.getOutputPath());
             }
-            System.out.println("Writing to service: " + serviceDefinition.getName());
+            System.out.println("Writing to module: " + serviceDefinition.getName());
             for (DataWriter dataWriter : dataWriters) {
                 if (dataWriter.shouldWrite(serviceDefinition)) {
                     dataWriter.write(serviceDefinition);

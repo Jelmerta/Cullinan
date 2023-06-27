@@ -311,13 +311,9 @@ public class ProxyCreator {
                 continue;
             }
 
-            System.out.println(method.getSimpleName());
             if (method.hasAnnotation(Override.class)) {
-                System.out.println("OVERRIDE");
-//                CtAnnotation<Annotation> annotation = SpoonFactoryManager.getDefaultFactory().createAnnotation(SpoonFactoryManager.getDefaultFactory().createCtTypeReference(Override.class));
                 CtAnnotation annotation = method.getAnnotation(SpoonFactoryManager.getDefaultFactory().createCtTypeReference(Override.class));
                 proxyCall.removeAnnotation(annotation);
-//                proxyCall.setAnnotations(Collections.EMPTY_LIST);
             }
 
             CtBlock body = SpoonFactoryManager.getDefaultFactory().createBlock();
@@ -534,8 +530,7 @@ public class ProxyCreator {
         body.addStatement(assignId);
     }
 
-    public static String findFullMethodName(CtClass originalClass, String functionName) {
-        System.out.println(originalClass.getSimpleName());
+    public static String findFullMethodName(CtType originalClass, String functionName) {
         if (!originalClass.isTopLevel()) { // isInnerClass
             functionName = originalClass.getSimpleName().substring(0, 1).toLowerCase() + originalClass.getSimpleName().substring(1) + "InnerClass" + functionName.substring(0, 1).toUpperCase() + functionName.substring(1);
             if (originalClass.getParent().getClass().equals(CtNewClassImpl.class)) { // Anonymous class inlined creation thing
@@ -642,9 +637,6 @@ public class ProxyCreator {
             return;
         }
         CtTypeReference superclass = originalClass.getSuperclass();
-        System.out.println();
-        System.out.println(originalClass.getSimpleName());
-        System.out.println(superclass);
 
         CtClass<Object> superClassInCodeBase = SpoonFactoryManager.getDefaultFactory().Class().get(superclass.getQualifiedName());
         if (superClassInCodeBase == null) { // Class is outside of code base...How do we deal with method calls in parents outside code base? Do we need to copy that data...? Not good...

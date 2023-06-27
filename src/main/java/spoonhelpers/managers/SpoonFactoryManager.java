@@ -14,7 +14,9 @@ public class SpoonFactoryManager {
     private static Factory factory;
 
     static {
-        factory = createFactory(Path.of("../mybatis-3" + "/src/main/java")); // Just used as a generator factory
+//        factory = createFactory(Path.of("../dddsample-core-master" + "/src/main/java")); // Just used as a generator factory
+//        factory = createFactory(Path.of("../mybatis-3" + "/src/main/java")); // Just used as a generator factory
+        factory = createFactory(Path.of("../cullinan_demo" + "/src/main/java")); // Just used as a generator factory
     }
 
     public static Factory getDefaultFactory() {

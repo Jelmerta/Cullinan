@@ -34,7 +34,7 @@ public class DataGenerator {
         generatedData = generateHelperData(generatedData);
         generatedData = generateClassData(generatedData, microservices);
         generatedData = generateServiceData(generatedData, originalPom, microservices);
-        generatedData = generateUnimplementedData(generatedData, microservices);
+//        generatedData = generateUnimplementedData(generatedData, microservices); // TODO Temporary disabled due to issue with anonymous classes.
 
         return generatedData;
     }
