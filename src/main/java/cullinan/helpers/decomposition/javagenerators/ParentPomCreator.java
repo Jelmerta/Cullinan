@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class ParentPomCreator {
+    private final String projectName;
     private String parentPom = "<project xmlns=\"http://maven.apache.org/POM/4.0.0\"\n" +
             "         xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n" +
             "         xsi:schemaLocation=\"http://maven.apache.org/POM/4.0.0\n" +
@@ -29,6 +30,7 @@ public class ParentPomCreator {
             "    </properties>\n" +
             "\n" +
             "    <groupId>MyMicroservicesProjects</groupId>\n" +
+//            "    <artifactId>ARTIFACTID</artifactId>\n" +
             "    <artifactId>microservices</artifactId>\n" +
             "    <packaging>pom</packaging>\n" +
             "    <version>1.0-SNAPSHOT</version>\n" +
@@ -42,7 +44,8 @@ public class ParentPomCreator {
 
     private final List<String> serviceNames;
 
-    public ParentPomCreator(List<Microservice> microservices) {
+    public ParentPomCreator(String projectName, List<Microservice> microservices) {
+        this.projectName = projectName;
         this.serviceNames = microservices.stream()
                 .map(Microservice::getName)
                 .collect(Collectors.toList());
@@ -54,7 +57,11 @@ public class ParentPomCreator {
             String serviceModule = "    <module>" + serviceName+ "</module>\n";
             serviceModules.append(serviceModule);
         }
+
+        serviceModules.append("    <module>" + projectName + "</module>\n"); // TODO or "main" or the original name of the project...
         parentPom = parentPom.replace("<SERVICESHERE>", serviceModules.toString());
+//        parentPom = parentPom.replace("<ARTIFACTID>", projectName); // TODO This does make sure the name matches but now we need to change all the references to it
+//        parentPom = parentPom.replace("<SERVICESHERE>", serviceModules.toString());
         return parentPom;
 
 //        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();

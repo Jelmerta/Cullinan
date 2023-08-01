@@ -8,6 +8,10 @@ public class StorageManager {
         return storage.get(id);
     }
 
+    public static void addWithId(String id, Object t) {
+        storage.put(id, t);
+    }
+
     public static String addUUID(Object t) {
         UUID id = UUID.randomUUID();
         String uuidAsString = id.toString();
@@ -32,4 +36,9 @@ public class StorageManager {
     }
 
     private static HashMap<String, Object> storage = new HashMap<>();
+
+    // Loads database upon starting service with statically available variables
+    public static void loadDatabase() {
+
+    }
 }

@@ -17,14 +17,14 @@ public class ParentModuleGenerator {
         this.microservices = microservices;
     }
 
-    public GeneratedParentModule generate() {
+    public GeneratedParentModule generate(String projectName) {
         generatedParentModule = new GeneratedParentModule();
-        generatedParentModule = generateParentPom();
+        generatedParentModule = generateParentPom(projectName);
         return generatedParentModule;
     }
 
-    private GeneratedParentModule generateParentPom() {
-        ParentPom pom = new ParentPom(microservices);
+    private GeneratedParentModule generateParentPom(String projectName) {
+        ParentPom pom = new ParentPom(projectName, microservices);
         generatedParentModule.addPom(pom);
         return generatedParentModule;
     }

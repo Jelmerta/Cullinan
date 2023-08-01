@@ -35,7 +35,7 @@ public class UnimplementedTypeGenerator {
             return new UnimplementedType(type); // Interface does not require any changes
 //        } else if (type.isClass() || type.isEnum()) {
         } else if (type.isClass() || type.isEnum()) {
-            return new UnimplementedType(emptyMethodBodies(removeAnonymousTypes(type)));
+            return new UnimplementedType(emptyMethodBodies(removeAnonymousTypes(removeFields(type))));
         } else {
             throw new IllegalStateException("Unexpected type?");
         }
@@ -72,6 +72,14 @@ public class UnimplementedTypeGenerator {
         CtStatement throwException = aThrow.setThrownExpression(newException);
 
         method.setBody(throwException);
+    }
+
+    private static CtType removeFields(CtType type) {
+        List<CtField> fields = type.getFields();
+        for (CtField field : fields) {
+            type.removeField(field);
+        }
+        return type;
     }
 }
 

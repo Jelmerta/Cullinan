@@ -29,12 +29,13 @@ public class DataGenerator {
     // TODO We basically need to find a way to produce all possible classes.
     // And then for each class decide how it is going to be produced in a code base.
 
-    public GeneratedData generate(List<Microservice> microservices) {
-        generatedData = generateParentModuleData(generatedData, microservices);
+    public GeneratedData generate(String projectName, List<Microservice> microservices) {
+        generatedData = generateParentModuleData(projectName, generatedData, microservices);
         generatedData = generateHelperData(generatedData);
         generatedData = generateClassData(generatedData, microservices);
         generatedData = generateServiceData(generatedData, originalPom, microservices);
-//        generatedData = generateUnimplementedData(generatedData, microservices); // TODO Temporary disabled due to issue with anonymous classes.
+        // TODO There are issues with anonymous classes. Generation of these can be disabled while still running correctly.
+        generatedData = generateUnimplementedData(generatedData, microservices);
 
         return generatedData;
     }
@@ -102,7 +103,7 @@ public class DataGenerator {
 
     private GeneratedData generateServiceData(GeneratedData generatedData, Document originalPom, List<Microservice> microservices) {
         generatedData = generateMainServiceData(generatedData, originalPom);
-        generatedData = generateParentModuleData(generatedData, microservices);
+//        generatedData = generateParentModuleData(generatedData, microservices);
         generatedData = generateInterfaceServiceData(generatedData);
         for (Microservice microservice : microservices) {
             generatedData = generateMicroserviceData(generatedData,originalPom, microservice);
@@ -117,9 +118,10 @@ public class DataGenerator {
         return generatedData;
     }
 
-    private GeneratedData generateParentModuleData(GeneratedData generatedData, List<Microservice> microservices) {
+    // TODO Why is this called twice?
+    private GeneratedData generateParentModuleData(String projectName, GeneratedData generatedData, List<Microservice> microservices) {
         ParentModuleGenerator parentModuleGenerator = new ParentModuleGenerator(generatedData, microservices);
-        GeneratedParentModule generatedParentModule = parentModuleGenerator.generate();
+        GeneratedParentModule generatedParentModule = parentModuleGenerator.generate(projectName);
         generatedData.addGeneratedParentModule(generatedParentModule);
         return generatedData;
     }

@@ -12,8 +12,8 @@ public class ParentPom implements Writable {
     private final String pom;
 //    private final Document pom;
 
-    public ParentPom(List<Microservice> microservices) {
-        ParentPomCreator parentPomCreator = new ParentPomCreator(microservices);
+    public ParentPom(String projectName, List<Microservice> microservices) {
+        ParentPomCreator parentPomCreator = new ParentPomCreator(projectName, microservices);
         pom = parentPomCreator.build();
     }
 

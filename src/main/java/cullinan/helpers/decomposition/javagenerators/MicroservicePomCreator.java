@@ -129,6 +129,26 @@ public class MicroservicePomCreator {
     private static void addDependency(Document document, String dependencyGroupId) {
         Node project = document.getElementsByTagName("project").item(0);
         NodeList childNodes = project.getChildNodes();
+
+
+        //        First make sure that dependencies exist
+        boolean dependenciesFound = false;
+        for (int temp = 0; temp < childNodes.getLength(); temp++) {
+            Node item = childNodes.item(temp);
+            if (item.getNodeName().equalsIgnoreCase("dependencies")) {
+                dependenciesFound = true;
+            }
+        }
+
+        if (!dependenciesFound) {
+            Element dependencies = document.createElement("dependencies");
+            dependencies.setTextContent("\n\t\t\t");
+            dependencies.appendChild(document.createTextNode("\t"));
+            project.appendChild(dependencies);
+        }
+
+
+
         for (int temp = 0; temp < childNodes.getLength(); temp++) {
             Node item = childNodes.item(temp);
             if (item.getNodeName().equalsIgnoreCase("dependencies")) {

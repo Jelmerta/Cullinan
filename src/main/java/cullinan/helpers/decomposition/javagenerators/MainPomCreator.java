@@ -14,6 +14,7 @@ public class MainPomCreator {
     private static final String DEPENDENCY_VERSION = "1.0-SNAPSHOT";
     private static final String DEPENDENCY_SCOPE = "compile";
     private final Document pom;
+    private static final String RELATIVE_PATH = "../pom.xml";
 
     public MainPomCreator(Document pom) {
         Element documentElement = pom.getDocumentElement();
@@ -55,12 +56,31 @@ public class MainPomCreator {
         }
 
 //        addInterfaceDependency(groupId);
+        addParent(project);
         addInterfaceDependency("MyMicroservicesProjects");
     }
 
     private void addInterfaceDependency(String dependencyGroupId) {
         Node project = pom.getElementsByTagName("project").item(0);
         NodeList childNodes = project.getChildNodes();
+
+
+//        First make sure that dependencies exist
+        boolean dependenciesFound = false;
+        for (int temp = 0; temp < childNodes.getLength(); temp++) {
+            Node item = childNodes.item(temp);
+            if (item.getNodeName().equalsIgnoreCase("dependencies")) {
+                dependenciesFound = true;
+            }
+        }
+
+        if (!dependenciesFound) {
+            Element dependencies = pom.createElement("dependencies");
+            dependencies.setTextContent("\n\t\t\t");
+            dependencies.appendChild(pom.createTextNode("\t"));
+            project.appendChild(dependencies);
+        }
+
         for (int temp = 0; temp < childNodes.getLength(); temp++) {
             Node item = childNodes.item(temp);
             if (item.getNodeName().equalsIgnoreCase("dependencies")) {
@@ -94,5 +114,36 @@ public class MainPomCreator {
                 item.appendChild(pom.createTextNode("\n\t"));
             }
         }
+    }
+
+    private void addParent(Node project) {
+        Node parent = pom.createElement("parent");
+        parent.appendChild(pom.createTextNode("\t"));
+
+        parent.setTextContent("\n\t\t\t");
+
+        Node groupId = pom.createElement("groupId");
+        groupId.setTextContent("MyMicroservicesProjects");
+        parent.appendChild(groupId);
+        parent.appendChild(pom.createTextNode("\n\t\t\t"));
+
+        Node artifactId = pom.createElement("artifactId");
+        artifactId.setTextContent("microservices");
+        parent.appendChild(artifactId);
+        parent.appendChild(pom.createTextNode("\n\t\t\t"));
+
+        Node version = pom.createElement("version");
+        version.setTextContent(DEPENDENCY_VERSION);
+        parent.appendChild(version);
+        parent.appendChild(pom.createTextNode("\n\t\t\t"));
+
+        Node relativePath = pom.createElement("relativePath");
+        relativePath.setTextContent(RELATIVE_PATH);
+        parent.appendChild(relativePath);
+        parent.appendChild(pom.createTextNode("\n\t\t\t"));
+
+        project.appendChild(parent);
+        project.appendChild(pom.createTextNode("\n\t"));
+
     }
 }

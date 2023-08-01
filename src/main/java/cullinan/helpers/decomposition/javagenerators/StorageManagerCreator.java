@@ -40,4 +40,10 @@ public class StorageManagerCreator {
 
         return copy;
     }
+
+
+//    TODO Need to add static non-private variables as such:
+//            Rental rental = Rental.aGloballyAvailableTestRental;
+//        rental.setReferenceId("hi.Rental::aGloballyAvailableTestRental");
+//        addWithId(rental.getReferenceId(), rental);
 }
