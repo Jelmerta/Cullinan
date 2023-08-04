@@ -1,0 +1,19 @@
+// TODO Should it perhaps be file-based instead of class-based? Should we have paths for each class as there might be classes with the same name?
+// Use Package + classname? Or is that also not a unique identifier?
+// TODO It might be nice to mention the references here automactically, though perhaps this is not required as we can automatically identify them  with code analysis.
+// With that I mean the method invocations.
+
+// If classes are not mentioned, we can expect them to stay where they are (perhaps some monolithic module)
+{
+   "microservices": [
+      {
+         "name": "Location",
+         "identifiedClasses": [
+            "se.citerus.dddsample.domain.model.location.Location",
+            "se.citerus.dddsample.domain.model.location.UnLocode",
+            "se.citerus.dddsample.domain.model.handling.UnknownLocationException",
+            "se.citerus.dddsample.domain.model.location.SampleLocations"
+         ]
+      }
+   ]
+}
